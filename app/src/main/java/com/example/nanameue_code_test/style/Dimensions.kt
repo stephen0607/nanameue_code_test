@@ -1,4 +1,4 @@
-package com.example.nanameue_code_test.ui.style
+package com.example.nanameue_code_test.style
 
 import androidx.compose.ui.unit.dp
 

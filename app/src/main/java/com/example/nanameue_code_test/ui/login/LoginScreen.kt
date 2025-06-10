@@ -1,4 +1,4 @@
-package com.example.nanameue_code_test.ui
+package com.example.nanameue_code_test.ui.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.nanameue_code_test.ui.style.Dimensions
+import com.example.nanameue_code_test.style.Dimensions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
