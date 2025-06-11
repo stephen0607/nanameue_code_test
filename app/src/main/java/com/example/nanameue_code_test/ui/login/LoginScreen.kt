@@ -22,13 +22,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.nanameue_code_test.style.Dimensions
+import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = koinViewModel()
+    viewModel: LoginViewModel = koinViewModel(),
+    authViewModel: AuthViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -84,7 +86,10 @@ fun LoginScreen(
             })
             Spacer(modifier = Modifier.height(Dimensions.paddingMedium))
             Button(
-                onClick = { viewModel.login() },
+                onClick = { authViewModel.signIn(
+                    email = uiState.email,
+                    password = uiState.password
+                ) },
                 enabled = uiState.isButtonEnabled
             ) {
                 Text("Login")

@@ -1,6 +1,7 @@
 package com.example.nanameue_code_test.ui.sign_up
 
 import androidx.lifecycle.ViewModel
+import com.example.nanameue_code_test.NavigationEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -9,17 +10,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class SignUpUiState(
-    val email: String = "",
-    val password: String = "",
-    val confirmPassword: String = "",
+    val email: String = "testtest@gmail.com",
+    val password: String = "123123123",
+    val confirmPassword: String = "123123123",
     val isEmailValid: Boolean = false,
     val isPasswordValid: Boolean = false,
     val isConfirmPasswordValid: Boolean = false,
     val isButtonEnabled: Boolean = false
 )
 
-sealed class SignUpEvent {
+sealed class SignUpEvent : NavigationEvent() {
     data object NavigateBack : SignUpEvent()
+    data object NavigateToLogin : SignUpEvent()
 }
 
 class SignUpViewModel : ViewModel() {
@@ -68,6 +70,8 @@ class SignUpViewModel : ViewModel() {
         _navigationEvent.tryEmit(SignUpEvent.NavigateBack)
     }
 
-    fun signUp() {
+    fun navigationToLogin(){
+        _navigationEvent.tryEmit(SignUpEvent.NavigateToLogin)
+
     }
 }
