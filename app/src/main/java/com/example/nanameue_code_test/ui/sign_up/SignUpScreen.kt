@@ -13,18 +13,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.example.nanameue_code_test.style.Dimensions
 import org.koin.androidx.compose.koinViewModel
 
@@ -33,48 +31,77 @@ import org.koin.androidx.compose.koinViewModel
 fun SignUpScreen(
     viewModel: SignUpViewModel = koinViewModel()
 ) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    IconButton(onClick = { viewModel.navBack() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                title = { Text("Sign Up") }
-            )
-        }
-    ) { paddingValues ->
+    Scaffold(topBar = {
+        TopAppBar(navigationIcon = {
+            IconButton(onClick = { viewModel.navigateBack() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        }, title = { Text("Sign Up") })
+    }) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp),
+                .padding(Dimensions.paddingMedium),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+                value = uiState.email,
+                onValueChange = { viewModel.updateEmail(it) },
                 label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = !uiState.isEmailValid && uiState.email.isNotEmpty()
             )
+            if (!uiState.isEmailValid && uiState.email.isNotEmpty()) {
+                Text(
+                    text = "Please enter a valid email",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = Dimensions.paddingSmall)
+                )
+            }
             Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = uiState.password,
+                onValueChange = { viewModel.updatePassword(it) },
                 label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                isError = !uiState.isPasswordValid && uiState.password.isNotEmpty()
             )
+            if (!uiState.isPasswordValid && uiState.password.isNotEmpty()) {
+                Text(
+                    text = "Password must be at least 8 characters",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = Dimensions.paddingSmall)
+                )
+            }
+            Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
+            OutlinedTextField(
+                value = uiState.confirmPassword,
+                onValueChange = { viewModel.updateConfirmPassword(it) },
+                label = { Text("Confirm Password") },
+                modifier = Modifier.fillMaxWidth(),
+                isError = !uiState.isConfirmPasswordValid && uiState.confirmPassword.isNotEmpty()
+            )
+            if (!uiState.isConfirmPasswordValid && uiState.confirmPassword.isNotEmpty()) {
+                Text(
+                    text = "Passwords do not match",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = Dimensions.paddingSmall)
+                )
+            }
             Spacer(modifier = Modifier.height(Dimensions.paddingMedium))
-            Spacer(modifier = Modifier.height(Dimensions.paddingMedium))
-            Button(onClick = { }) {
+            Button(
+                onClick = { viewModel.signUp() }, enabled = uiState.isButtonEnabled
+            ) {
                 Text("Sign Up")
             }
         }
