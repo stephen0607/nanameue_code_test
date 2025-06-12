@@ -1,6 +1,7 @@
 package com.example.nanameue_code_test.ui.login
 
 import androidx.lifecycle.ViewModel
+import com.example.nanameue_code_test.NavigationEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -9,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 
-sealed class LoginEvent {
+sealed class LoginEvent : NavigationEvent() {
     data object NavigateToTimeline : LoginEvent()
     data object NavigateToSignUp : LoginEvent()
 }
@@ -49,5 +50,18 @@ class LoginViewModel : ViewModel() {
 
     fun login() {
         _navigationEvent.tryEmit(LoginEvent.NavigateToTimeline)
+    }
+
+    // todo remove after testing
+    fun autoFillForTesting(){
+        _uiState.update { currentState ->
+            currentState.copy(
+                email = "1abc@abcde.com",
+                password = "12312312",
+                isPasswordValid = true,
+                isEmailValid = true,
+                isButtonEnabled = true
+            )
+        }
     }
 } 

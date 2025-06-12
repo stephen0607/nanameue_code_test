@@ -22,38 +22,33 @@ class AuthViewModel(
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            authRepository.signIn(email, password)
-                .onSuccess {
-                    _authState.value = AuthState.Success(it)
-                }
-                .onFailure {
-                    _authState.value = AuthState.Error(it.message ?: "Authentication failed")
-                }
+            authRepository.signIn(email, password).onSuccess {
+                _authState.value = AuthState.Success(it)
+            }.onFailure {
+                _authState.value = AuthState.Error(it.message ?: "Authentication failed")
+            }
         }
     }
 
-    fun signUp(email: String, password: String) {
+    fun signUp(email: String, password: String, displayName: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            authRepository.signUp(email, password)
-                .onSuccess {
-                    _authState.value = AuthState.Success(it)
-                }
-                .onFailure {
-                    _authState.value = AuthState.Error(it.message ?: "Registration failed")
-                }
+            authRepository.signUp(email, password).onSuccess {
+                authRepository.updateDisplayName(displayName)
+                _authState.value = AuthState.Success(it)
+            }.onFailure {
+                _authState.value = AuthState.Error(it.message ?: "Registration failed")
+            }
         }
     }
 
     fun signOut() {
         viewModelScope.launch {
-            authRepository.signOut()
-                .onSuccess {
-                    _authState.value = AuthState.Initial
-                }
-                .onFailure {
-                    _authState.value = AuthState.Error(it.message ?: "Sign out failed")
-                }
+            authRepository.signOut().onSuccess {
+                _authState.value = AuthState.Initial
+            }.onFailure {
+                _authState.value = AuthState.Error(it.message ?: "Sign out failed")
+            }
         }
     }
 
@@ -69,8 +64,8 @@ class AuthViewModel(
 }
 
 sealed class AuthState {
-    object Initial : AuthState()
-    object Loading : AuthState()
+    data object Initial : AuthState()
+    data object Loading : AuthState()
     data class Success(val user: FirebaseUser) : AuthState()
     data class Error(val message: String) : AuthState()
 }

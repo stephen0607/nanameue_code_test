@@ -10,9 +10,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class SignUpUiState(
-    val email: String = "testtest@gmail.com",
-    val password: String = "123123123",
-    val confirmPassword: String = "123123123",
+    val displayName: String = "",
+    val email: String = "",
+    val password: String = "",
+    val confirmPassword: String = "",
+    val isDisplayNameValid: Boolean = false,
     val isEmailValid: Boolean = false,
     val isPasswordValid: Boolean = false,
     val isConfirmPasswordValid: Boolean = false,
@@ -21,7 +23,7 @@ data class SignUpUiState(
 
 sealed class SignUpEvent : NavigationEvent() {
     data object NavigateBack : SignUpEvent()
-    data object NavigateToLogin : SignUpEvent()
+    data object NavigateToTimeline : SignUpEvent()
 }
 
 class SignUpViewModel : ViewModel() {
@@ -30,6 +32,15 @@ class SignUpViewModel : ViewModel() {
 
     private val _navigationEvent = MutableSharedFlow<SignUpEvent>(replay = 1)
     val navigationEvent: SharedFlow<SignUpEvent> = _navigationEvent
+
+    fun updateDisplayName(displayName: String) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                displayName = displayName,
+                isDisplayNameValid = displayName.isNotBlank()
+            )
+        }
+    }
 
     fun updateEmail(email: String) {
         val isEmailValid = email.matches(Regex("^[A-Za-z0-9+_.-]+@(.+)\$"))
@@ -70,8 +81,23 @@ class SignUpViewModel : ViewModel() {
         _navigationEvent.tryEmit(SignUpEvent.NavigateBack)
     }
 
-    fun navigationToLogin(){
-        _navigationEvent.tryEmit(SignUpEvent.NavigateToLogin)
+    fun navigateToTimeline() {
+        _navigationEvent.tryEmit(SignUpEvent.NavigateToTimeline)
+    }
 
+    // todo remove after testing
+    fun autoFillSignUpForTesting() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                displayName = "abc",
+                email = "abc@abcde.com",
+                password = "12312312",
+                confirmPassword = "12312312",
+                isConfirmPasswordValid = true,
+                isPasswordValid = true,
+                isEmailValid = true,
+                isButtonEnabled = true
+            )
+        }
     }
 }
