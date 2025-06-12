@@ -5,10 +5,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface FirebaseAuthRepository {
     val currentUser: FirebaseUser?
-    
+
     suspend fun signIn(email: String, password: String): Result<FirebaseUser>
     suspend fun signUp(email: String, password: String): Result<FirebaseUser>
     suspend fun signOut(): Result<Unit>
-    suspend fun resetPassword(email: String): Result<Unit>
+    suspend fun updateDisplayName(name: String): Result<Unit>
     fun getAuthState(): Flow<FirebaseUser?>
 } 

@@ -2,6 +2,7 @@ package com.example.nanameue_code_test.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.userProfileChangeRequest
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -30,9 +31,20 @@ class FirebaseAuthRepositoryImpl(
         firebaseAuth.signOut()
     }
 
-    override suspend fun resetPassword(email: String): Result<Unit> = runCatching {
-        firebaseAuth.sendPasswordResetEmail(email).await()
+    override suspend fun updateDisplayName(name: String): Result<Unit> {
+        val user = FirebaseAuth.getInstance().currentUser
+            ?: return Result.failure(Exception("No user logged in"))
+
+        return try {
+            user.updateProfile(userProfileChangeRequest {
+                displayName = name
+            }).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
+
 
     override fun getAuthState(): Flow<FirebaseUser?> = callbackFlow {
         val listener = FirebaseAuth.AuthStateListener { auth ->
