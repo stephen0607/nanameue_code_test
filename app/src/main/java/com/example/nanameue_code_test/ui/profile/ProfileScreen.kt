@@ -86,6 +86,9 @@ fun ProfileScreen(
                 else -> {}
             }
             userInfo?.let { user ->
+                user.displayName?.let { displayName ->
+                    Text("displayName: $displayName")
+                }
                 user.email?.let { email ->
                     Text("Email: $email")
                 }
