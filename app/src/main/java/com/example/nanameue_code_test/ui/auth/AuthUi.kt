@@ -7,12 +7,12 @@ import androidx.compose.runtime.Composable
 
 
 @Composable
-fun AuthFailUi(authState: AuthState, onClick: () -> Unit) {
+fun AuthFailUi(authState: AuthState, onDismiss: () -> Unit) {
     val errorMessage = (authState as AuthState.Error).message
     AlertDialog(
-        onDismissRequest = {},
+        onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(onClick = onClick) {
+            TextButton(onClick = onDismiss) {
                 Text("OK")
             }
         },
@@ -21,13 +21,14 @@ fun AuthFailUi(authState: AuthState, onClick: () -> Unit) {
     )
 }
 
+
 @Composable
 fun AuthSuccessUi(onClick: () -> Unit) {
     AlertDialog(
         onDismissRequest = {},
         confirmButton = {
             TextButton(onClick = onClick) {
-                Text("Back to Sign In")
+                Text("Go to timeline")
             }
         },
         title = { Text("Registration Successful") },
