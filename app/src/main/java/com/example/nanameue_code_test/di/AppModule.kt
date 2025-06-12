@@ -1,5 +1,6 @@
 package com.example.nanameue_code_test.di
 
+import com.example.nanameue_code_test.ui.create_post.CreatePostViewModel
 import com.example.nanameue_code_test.ui.login.LoginViewModel
 import com.example.nanameue_code_test.ui.profile.ProfileViewModel
 import com.example.nanameue_code_test.ui.sign_up.SignUpViewModel
@@ -12,4 +13,5 @@ val appModule = module {
     viewModel { SignUpViewModel() }
     viewModel { TimelineViewModel() }
     viewModel { ProfileViewModel() }
+    viewModel { CreatePostViewModel() }
 }
