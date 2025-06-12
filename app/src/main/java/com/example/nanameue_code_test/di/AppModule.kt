@@ -1,6 +1,7 @@
 package com.example.nanameue_code_test.di
 
 import com.example.nanameue_code_test.ui.login.LoginViewModel
+import com.example.nanameue_code_test.ui.profile.ProfileViewModel
 import com.example.nanameue_code_test.ui.sign_up.SignUpViewModel
 import com.example.nanameue_code_test.ui.timeline.TimelineViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -10,4 +11,5 @@ val appModule = module {
     viewModel { LoginViewModel() }
     viewModel { SignUpViewModel() }
     viewModel { TimelineViewModel() }
+    viewModel { ProfileViewModel() }
 }
