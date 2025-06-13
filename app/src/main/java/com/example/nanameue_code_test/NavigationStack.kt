@@ -18,13 +18,15 @@ import com.example.nanameue_code_test.ui.profile.ProfileViewModel
 import com.example.nanameue_code_test.ui.sign_up.SignUpEvent
 import com.example.nanameue_code_test.ui.sign_up.SignUpScreen
 import com.example.nanameue_code_test.ui.sign_up.SignUpViewModel
+import com.example.nanameue_code_test.ui.splash.SplashEvent
+import com.example.nanameue_code_test.ui.splash.SplashScreen
+import com.example.nanameue_code_test.ui.splash.SplashViewModel
 import com.example.nanameue_code_test.ui.timeline.TimelineEvent
 import com.example.nanameue_code_test.ui.timeline.TimelineScreen
 import com.example.nanameue_code_test.ui.timeline.TimelineViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.merge
 import org.koin.androidx.compose.koinViewModel
-
 
 @Composable
 fun NavigationStack() {
@@ -35,6 +37,7 @@ fun NavigationStack() {
     val profileViewModel: ProfileViewModel = koinViewModel()
     val createPostViewModel: CreatePostViewModel = koinViewModel()
     val authViewModel: AuthViewModel = koinViewModel()
+    val splashViewModel: SplashViewModel = koinViewModel()
 
     LaunchedEffect(Unit) {
         merge(
@@ -42,8 +45,10 @@ fun NavigationStack() {
             signUpViewModel.navigationEvent,
             profileViewModel.navigationEvent,
             timelineViewModel.navigationEvent,
-            createPostViewModel.navigationEvent
+            createPostViewModel.navigationEvent,
+            splashViewModel.navigationEvent
         ).collectLatest { event ->
+            println("stephennn event $event")
             when (event) {
                 is LoginEvent.NavigateToSignUp -> {
                     navController.navigate(Screen.SignUp.route)
@@ -52,14 +57,17 @@ fun NavigationStack() {
                 is ProfileEvent.NavigateToTimeline,
                 LoginEvent.NavigateToTimeline,
                 SignUpEvent.NavigateToTimeline,
-                CreatePostEvent.NavigateToTimeline
+                CreatePostEvent.NavigateToTimeline,
+                SplashEvent.NavigateToTimeline
                     -> {
                     navController.navigate(Screen.Timeline.route) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
 
-                is ProfileEvent.NavigateToLogin -> {
+                is ProfileEvent.NavigateToLogin,
+                SplashEvent.NavigateToLogin
+                    -> {
                     navController.navigate(Screen.Login.route) {
                         popUpTo(0) { inclusive = true }
                     }
@@ -80,7 +88,10 @@ fun NavigationStack() {
         }
     }
 
-    NavHost(navController = navController, startDestination = Screen.Login.route) {
+    NavHost(navController = navController, startDestination = Screen.Splash.route) {
+        composable(route = Screen.Splash.route) {
+            SplashScreen(splashViewModel)
+        }
         composable(route = Screen.Login.route) {
             LoginScreen(loginViewModel, authViewModel)
         }
@@ -96,7 +107,6 @@ fun NavigationStack() {
         composable(route = Screen.CreatePost.route) {
             CreatePostScreen(createPostViewModel, authViewModel)
         }
-
     }
 }
 

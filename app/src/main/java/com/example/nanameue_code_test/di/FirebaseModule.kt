@@ -2,6 +2,7 @@ package com.example.nanameue_code_test.di
 
 import com.example.nanameue_code_test.data.repository.FirebaseAuthRepository
 import com.example.nanameue_code_test.data.repository.FirebaseAuthRepositoryImpl
+import com.example.nanameue_code_test.domain.usecase.auth.GetAuthStateUseCase
 import com.example.nanameue_code_test.domain.usecase.auth.SignInUseCase
 import com.example.nanameue_code_test.domain.usecase.auth.SignOutUseCase
 import com.example.nanameue_code_test.domain.usecase.auth.SignUpUseCase
@@ -29,16 +30,15 @@ val firebaseModule = module {
     single { FirebaseFirestore.getInstance() }
 
     // Repository
-    single<FirebaseAuthRepository> {
-        FirebaseAuthRepositoryImpl(get())
-    }
+    single<FirebaseAuthRepository> { FirebaseAuthRepositoryImpl(get()) }
 
     // ViewModel
     viewModel { AuthViewModel(get(), get(), get(), get()) }
 
+    // Use Cases
+    single { GetAuthStateUseCase(get()) }
     single { CreatePostUseCase(get(), get(), get()) }
     single { SignInUseCase(get()) }
     single { SignOutUseCase(get()) }
     single { SignUpUseCase(get()) }
-
 }
