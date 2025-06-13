@@ -58,20 +58,20 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimelineScreen(
-    timelineViewModel: TimelineViewModel = koinViewModel(),
+    viewModel: TimelineViewModel = koinViewModel(),
 ) {
     val scrollState = rememberScrollState()
-    val uiState by timelineViewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        timelineViewModel.fetchTimeline()
+        viewModel.fetchTimeline()
     }
 
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         TopAppBar(
             title = { Text("Timeline") },
             actions = {
-                IconButton(onClick = { timelineViewModel.navigateToProfile() }) {
+                IconButton(onClick = { viewModel.navigateToProfile() }) {
                     Icon(
                         imageVector = Icons.Default.Person, contentDescription = "Go to Profile"
                     )
@@ -85,7 +85,7 @@ fun TimelineScreen(
         )
     }, floatingActionButton = {
         FloatingActionButton(onClick = {
-            timelineViewModel.navigateToCreatePost()
+            viewModel.navigateToCreatePost()
         }) {
             Icon(Icons.Default.Create, contentDescription = "Add")
         }

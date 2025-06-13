@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -47,16 +48,21 @@ import org.koin.androidx.compose.koinViewModel
 @Preview
 @Composable
 fun CreatePostScreen(
-    createPostViewModel: CreatePostViewModel = koinViewModel(),
+    viewModel: CreatePostViewModel = koinViewModel(),
     authViewModel: AuthViewModel = koinViewModel()
 ) {
-    val uiState by createPostViewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
     val user = authViewModel.getUserInfo()
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        createPostViewModel.onImageSelected(uri)
+        viewModel.onImageSelected(uri)
+    }
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.resetUiState()
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -65,7 +71,7 @@ fun CreatePostScreen(
                 TopAppBar(
                     title = { Text("Create New Post") },
                     navigationIcon = {
-                        IconButton(onClick = { createPostViewModel.navigateToTimeline() }) {
+                        IconButton(onClick = { viewModel.navigateToTimeline() }) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Back"
@@ -89,7 +95,7 @@ fun CreatePostScreen(
 
                 OutlinedTextField(
                     value = uiState.postContent,
-                    onValueChange = createPostViewModel::onPostContentChanged,
+                    onValueChange = viewModel::onPostContentChanged,
                     placeholder = { Text("What's happening?") },
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -98,7 +104,7 @@ fun CreatePostScreen(
 
                 uiState.imageUri?.let { uri ->
                     SelectedImageWithRemoveButton(uri) {
-                        createPostViewModel.removeImage()
+                        viewModel.removeImage()
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -115,7 +121,7 @@ fun CreatePostScreen(
                     }
 
                     Button(
-                        onClick = { createPostViewModel.createPost() },
+                        onClick = { viewModel.createPost() },
                         enabled = uiState.isPostButtonEnable
                     ) {
                         Text("Post")

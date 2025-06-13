@@ -85,6 +85,10 @@ class SignUpViewModel : ViewModel() {
         _navigationEvent.tryEmit(SignUpEvent.NavigateToTimeline)
     }
 
+    fun resetUiState() {
+        _uiState.value = SignUpUiState()
+    }
+
     // todo remove after testing
     fun autoFillSignUpForTesting() {
         _uiState.update { currentState ->

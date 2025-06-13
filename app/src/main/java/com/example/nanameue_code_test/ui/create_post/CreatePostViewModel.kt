@@ -68,8 +68,11 @@ class CreatePostViewModel(
         }
     }
 
-
     fun navigateToTimeline() {
         _navigationEvent.tryEmit(CreatePostEvent.NavigateToTimeline)
+    }
+
+    fun resetUiState() {
+        _uiState.value = CreatePostUiState()
     }
 }
