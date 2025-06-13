@@ -17,7 +17,9 @@ sealed class CreatePostEvent : NavigationEvent() {
 
 data class CreatePostUiState(
     val postContent: String = "",
-    val imageUri: Uri? = null
+    val imageUri: Uri? = null,
+    val isPostButtonEnable: Boolean = false,
+    val isLoading: Boolean = false
 )
 
 
@@ -32,11 +34,18 @@ class CreatePostViewModel(
     val navigationEvent: SharedFlow<CreatePostEvent> = _navigationEvent
 
     fun onPostContentChanged(content: String) {
-        _uiState.value = _uiState.value.copy(postContent = content)
+        _uiState.value =
+            _uiState.value.copy(
+                postContent = content,
+                isPostButtonEnable = content.isNotBlank() || uiState.value.imageUri != null
+            )
     }
 
     fun onImageSelected(uri: Uri?) {
-        _uiState.value = _uiState.value.copy(imageUri = uri)
+        _uiState.value = _uiState.value.copy(
+            imageUri = uri,
+            isPostButtonEnable = uri != null || uiState.value.postContent.isNotBlank()
+        )
     }
 
     fun removeImage() {
@@ -45,12 +54,20 @@ class CreatePostViewModel(
 
     fun createPost() {
         viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
             val state = _uiState.value
-
-            createPostUseCase.execute(state.postContent, state.imageUri)
-            _navigationEvent.emit(CreatePostEvent.NavigateToTimeline)
+            try {
+                createPostUseCase.execute(state.postContent, state.imageUri)
+                _uiState.value = CreatePostUiState()
+                _navigationEvent.emit(CreatePostEvent.NavigateToTimeline)
+            } catch (e: Exception) {
+                // You can also emit an error event here if needed
+            } finally {
+                _uiState.value = _uiState.value.copy(isLoading = false)
+            }
         }
     }
+
 
     fun navigateToTimeline() {
         _navigationEvent.tryEmit(CreatePostEvent.NavigateToTimeline)

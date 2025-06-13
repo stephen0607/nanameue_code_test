@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -39,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,13 +68,21 @@ fun TimelineScreen(
     }
 
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-        TopAppBar(title = { Text("Timeline") }, actions = {
-            IconButton(onClick = { timelineViewModel.navigateToProfile() }) {
-                Icon(
-                    imageVector = Icons.Default.Person, contentDescription = "Go to Profile"
-                )
-            }
-        })
+        TopAppBar(
+            title = { Text("Timeline") },
+            actions = {
+                IconButton(onClick = { timelineViewModel.navigateToProfile() }) {
+                    Icon(
+                        imageVector = Icons.Default.Person, contentDescription = "Go to Profile"
+                    )
+                }
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            ),
+        )
     }, floatingActionButton = {
         FloatingActionButton(onClick = {
             timelineViewModel.navigateToCreatePost()
@@ -80,29 +90,34 @@ fun TimelineScreen(
             Icon(Icons.Default.Create, contentDescription = "Add")
         }
     }) { innerPadding ->
-        Column(
-            Modifier
-                .background(Color.White)
-                .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(scrollState)
-        ) {
-            when (uiState) {
-                is TimelineUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                }
 
-                is TimelineUiState.Success -> {
+        when (uiState) {
+            is TimelineUiState.Loading -> {
+                Box(
+                    Modifier.fillMaxSize()
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+            }
+
+            is TimelineUiState.Success -> {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .background(Color.White)
+                        .padding(innerPadding)
+                        .verticalScroll(scrollState)
+                ) {
                     val posts = (uiState as TimelineUiState.Success).posts
                     posts.forEach {
                         PostUi(it)
                     }
                 }
+            }
 
-                is TimelineUiState.Error -> {
-                    val msg = (uiState as TimelineUiState.Error).message
-                    Text("Error: $msg", color = Color.Red)
-                }
+            is TimelineUiState.Error -> {
+                val msg = (uiState as TimelineUiState.Error).message
+                Text("Error: $msg", color = Color.Red)
             }
         }
     }
@@ -114,29 +129,41 @@ fun PostUi(post: Post = fakePost) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(8.dp),
+            .padding(horizontal = 10.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(10.dp)) {
+        Column(modifier = Modifier.padding(12.dp)) {
             Row(
-                verticalAlignment = Alignment.Bottom
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(text = post.displayName, style = MaterialTheme.typography.titleLarge)
-                Text(text = "@" + post.userId.slice(0..8), style = MaterialTheme.typography.bodyLarge)
+                if (post.displayName.isNotBlank()) {
+                    Text(
+                        text = post.displayName + " ",
+                        style = MaterialTheme.typography.titleLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                Text(
+                    text = "@" + post.userId.slice(0..8),
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = post.content, fontSize = 16.sp)
+            if (post.content.isNotBlank()) {
+                Text(text = post.content, fontSize = 16.sp)
+            }
             post.imageUrl?.let { safeImageUrl ->
                 Spacer(modifier = Modifier.height(8.dp))
                 NetworkImage(safeImageUrl)
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = formatTimestamp(post.timestamp),
-                fontSize = 14.sp,
-                color = Color.Gray
+                text = formatTimestamp(post.timestamp), fontSize = 14.sp, color = Color.Gray
             )
         }
     }

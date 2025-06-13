@@ -35,11 +35,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
+import com.example.nanameue_code_test.ui.common.FullScreenLoading
 import org.koin.androidx.compose.koinViewModel
 
 
@@ -52,7 +52,6 @@ fun CreatePostScreen(
 ) {
     val uiState by createPostViewModel.uiState.collectAsState()
     val user = authViewModel.getUserInfo()
-    val context = LocalContext.current
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -60,57 +59,77 @@ fun CreatePostScreen(
         createPostViewModel.onImageSelected(uri)
     }
 
-    Scaffold(topBar = {
-        TopAppBar(title = { Text("Create New Post") }, navigationIcon = {
-            IconButton(onClick = { createPostViewModel.navigateToTimeline() }) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Create New Post") },
+                    navigationIcon = {
+                        IconButton(onClick = { createPostViewModel.navigateToTimeline() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    }
+                )
             }
-        })
-    }) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
-        ) {
-            user?.email?.let {
-                Text(text = it, style = MaterialTheme.typography.bodyMedium)
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = uiState.postContent,
-                onValueChange = createPostViewModel::onPostContentChanged,
-                placeholder = { Text("What's happening?") },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            uiState.imageUri?.let { uri ->
-                SelectedImageWithRemoveButton(uri) {
-                    createPostViewModel.removeImage()
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(16.dp)
             ) {
-                IconButton(onClick = { imagePickerLauncher.launch("image/*") }) {
-                    Icon(imageVector = Icons.Filled.AccountBox, contentDescription = "Add image")
+                user?.email?.let {
+                    Text(text = it, style = MaterialTheme.typography.bodyMedium)
                 }
 
-                Button(onClick = { createPostViewModel.createPost() }) {
-                    Text("Post")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = uiState.postContent,
+                    onValueChange = createPostViewModel::onPostContentChanged,
+                    placeholder = { Text("What's happening?") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                uiState.imageUri?.let { uri ->
+                    SelectedImageWithRemoveButton(uri) {
+                        createPostViewModel.removeImage()
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    IconButton(onClick = { imagePickerLauncher.launch("image/*") }) {
+                        Icon(
+                            imageVector = Icons.Filled.AccountBox,
+                            contentDescription = "Add image"
+                        )
+                    }
+
+                    Button(
+                        onClick = { createPostViewModel.createPost() },
+                        enabled = uiState.isPostButtonEnable
+                    ) {
+                        Text("Post")
+                    }
                 }
             }
         }
+
+        // Show loading on top of everything
+        if (uiState.isLoading) {
+            FullScreenLoading()
+        }
     }
 }
-
 
 @Composable
 fun SelectedImageWithRemoveButton(
@@ -119,7 +138,7 @@ fun SelectedImageWithRemoveButton(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1f) // 可調整為你想要的高寬比例
+            .aspectRatio(1f)
     ) {
         AsyncImage(
             model = imageUri,

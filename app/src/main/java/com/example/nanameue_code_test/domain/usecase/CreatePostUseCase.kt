@@ -14,7 +14,7 @@ class CreatePostUseCase(
     suspend fun execute(title: String, imageUri: Uri?): Result<Unit> {
         val currentUser = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
         val id = currentUser.uid
-        val displayName = currentUser.uid
+        val displayName = currentUser.displayName.orEmpty()
 
         return try {
             val imageUrl = imageUri?.let { uploadImage(it, id) }

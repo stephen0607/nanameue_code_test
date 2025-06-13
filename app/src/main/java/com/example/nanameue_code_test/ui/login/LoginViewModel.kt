@@ -56,7 +56,7 @@ class LoginViewModel : ViewModel() {
     fun autoFillForTesting(){
         _uiState.update { currentState ->
             currentState.copy(
-                email = "1abc@abcde.com",
+                email = "22222abc@abcde.com",
                 password = "12312312",
                 isPasswordValid = true,
                 isEmailValid = true,

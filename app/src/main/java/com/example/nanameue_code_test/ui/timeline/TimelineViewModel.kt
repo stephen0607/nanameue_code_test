@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 // UI State
 sealed class TimelineUiState {
-    object Loading : TimelineUiState()
+    data object Loading : TimelineUiState()
     data class Success(val posts: List<Post>) : TimelineUiState()
     data class Error(val message: String) : TimelineUiState()
 }

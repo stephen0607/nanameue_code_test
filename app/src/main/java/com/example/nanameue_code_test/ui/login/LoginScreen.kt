@@ -26,9 +26,9 @@ import com.example.nanameue_code_test.ui.auth.AuthFailUi
 import com.example.nanameue_code_test.ui.auth.AuthState
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.FieldSpacer
+import com.example.nanameue_code_test.ui.common.FullScreenLoading
 import com.example.nanameue_code_test.ui.common.SingleLineTextField
 import com.example.nanameue_code_test.ui.common.ValidationErrorText
-import com.example.nanameue_code_test.ui.sign_up.FullScreenLoading
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
