@@ -1,5 +1,7 @@
 package com.example.nanameue_code_test.di
 
+import com.example.nanameue_code_test.domain.usecase.create_post.CreatePostUseCase
+import com.example.nanameue_code_test.domain.usecase.timeline.GetLatestPostsUseCase
 import com.example.nanameue_code_test.ui.create_post.CreatePostViewModel
 import com.example.nanameue_code_test.ui.login.LoginViewModel
 import com.example.nanameue_code_test.ui.profile.ProfileViewModel
@@ -11,7 +13,11 @@ import org.koin.dsl.module
 val appModule = module {
     viewModel { LoginViewModel() }
     viewModel { SignUpViewModel() }
-    viewModel { TimelineViewModel() }
+    viewModel { TimelineViewModel(get()) }
     viewModel { ProfileViewModel() }
-    viewModel { CreatePostViewModel() }
+    viewModel { CreatePostViewModel(get()) }
+
+    // usecase
+    single { GetLatestPostsUseCase(get()) }
+    single { CreatePostUseCase(get(), get(), get()) }
 }

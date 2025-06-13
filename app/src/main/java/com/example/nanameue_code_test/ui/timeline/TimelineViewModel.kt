@@ -3,8 +3,8 @@ package com.example.nanameue_code_test.ui.timeline
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nanameue_code_test.NavigationEvent
-import com.example.nanameue_code_test.domain.usecase.GetLatestPostsUseCase
-import com.example.nanameue_code_test.domain.usecase.Post
+import com.example.nanameue_code_test.domain.usecase.timeline.GetLatestPostsUseCase
+import com.example.nanameue_code_test.domain.usecase.timeline.Post
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

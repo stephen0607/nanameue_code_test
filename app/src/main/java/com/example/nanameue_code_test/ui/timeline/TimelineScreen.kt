@@ -48,7 +48,7 @@ import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest
-import com.example.nanameue_code_test.domain.usecase.Post
+import com.example.nanameue_code_test.domain.usecase.timeline.Post
 import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Date

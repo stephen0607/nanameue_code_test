@@ -1,4 +1,4 @@
-package com.example.nanameue_code_test.domain.usecase
+package com.example.nanameue_code_test.domain.usecase.create_post
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth

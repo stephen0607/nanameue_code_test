@@ -1,4 +1,4 @@
-package com.example.nanameue_code_test.domain.usecase
+package com.example.nanameue_code_test.domain.usecase.timeline
 
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await

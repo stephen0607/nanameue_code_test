@@ -3,6 +3,9 @@ package com.example.nanameue_code_test.ui.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nanameue_code_test.data.repository.FirebaseAuthRepository
+import com.example.nanameue_code_test.domain.usecase.auth.SignInUseCase
+import com.example.nanameue_code_test.domain.usecase.auth.SignOutUseCase
+import com.example.nanameue_code_test.domain.usecase.auth.SignUpUseCase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +13,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
-    private val authRepository: FirebaseAuthRepository
+    private val authRepository: FirebaseAuthRepository,
+    private val signInUseCase: SignInUseCase,
+    private val signUpUseCase: SignUpUseCase,
+    private val signOutUseCase: SignOutUseCase
 ) : ViewModel() {
     private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
     val authState: StateFlow<AuthState> = _authState
@@ -22,7 +28,7 @@ class AuthViewModel(
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            authRepository.signIn(email, password).onSuccess {
+            signInUseCase(email, password).onSuccess {
                 _authState.value = AuthState.Success(it)
             }.onFailure {
                 _authState.value = AuthState.Error(it.message ?: "Authentication failed")
@@ -33,7 +39,7 @@ class AuthViewModel(
     fun signUp(email: String, password: String, displayName: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            authRepository.signUp(email, password).onSuccess {
+            signUpUseCase.invoke(email, password).onSuccess {
                 authRepository.updateDisplayName(displayName)
                 _authState.value = AuthState.Success(it)
             }.onFailure {
@@ -44,7 +50,7 @@ class AuthViewModel(
 
     fun signOut() {
         viewModelScope.launch {
-            authRepository.signOut().onSuccess {
+            signOutUseCase.invoke().onSuccess {
                 _authState.value = AuthState.Initial
             }.onFailure {
                 _authState.value = AuthState.Error(it.message ?: "Sign out failed")

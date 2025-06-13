@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nanameue_code_test.NavigationEvent
-import com.example.nanameue_code_test.domain.usecase.CreatePostUseCase
+import com.example.nanameue_code_test.domain.usecase.create_post.CreatePostUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
