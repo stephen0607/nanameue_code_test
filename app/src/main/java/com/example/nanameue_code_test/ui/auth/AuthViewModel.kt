@@ -36,17 +36,25 @@ class AuthViewModel(
         }
     }
 
-    fun signUp(email: String, password: String, displayName: String) {
+    fun signUp(
+        email: String,
+        password: String,
+        displayName: String,
+        onResult: (Result<FirebaseUser>) -> Unit
+    ) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            signUpUseCase.invoke(email, password).onSuccess {
+            val result = signUpUseCase.invoke(email, password)
+            result.onSuccess {
                 authRepository.updateDisplayName(displayName)
                 _authState.value = AuthState.Success(it)
             }.onFailure {
                 _authState.value = AuthState.Error(it.message ?: "Registration failed")
             }
+            onResult(result)
         }
     }
+
 
     fun signOut() {
         viewModelScope.launch {

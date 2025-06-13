@@ -48,7 +48,6 @@ fun NavigationStack() {
             createPostViewModel.navigationEvent,
             splashViewModel.navigationEvent
         ).collectLatest { event ->
-            println("stephennn event $event")
             when (event) {
                 is LoginEvent.NavigateToSignUp -> {
                     navController.navigate(Screen.SignUp.route)
@@ -93,19 +92,19 @@ fun NavigationStack() {
             SplashScreen(splashViewModel)
         }
         composable(route = Screen.Login.route) {
-            LoginScreen(loginViewModel, authViewModel)
+            LoginScreen(loginViewModel, authViewModel, navController)
         }
         composable(route = Screen.SignUp.route) {
-            SignUpScreen(signUpViewModel, authViewModel)
+            SignUpScreen(signUpViewModel, authViewModel, navController)
         }
         composable(route = Screen.Timeline.route) {
-            TimelineScreen(timelineViewModel)
+            TimelineScreen(timelineViewModel, navController)
         }
         composable(route = Screen.Profile.route) {
-            ProfileScreen(profileViewModel, authViewModel)
+            ProfileScreen(profileViewModel, authViewModel, navController)
         }
         composable(route = Screen.CreatePost.route) {
-            CreatePostScreen(createPostViewModel, authViewModel)
+            CreatePostScreen(createPostViewModel, authViewModel, navController)
         }
     }
 }

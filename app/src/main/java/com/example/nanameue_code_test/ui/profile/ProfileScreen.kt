@@ -7,20 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,17 +27,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.nanameue_code_test.ui.auth.AuthFailUi
 import com.example.nanameue_code_test.ui.auth.AuthState
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
+import com.example.nanameue_code_test.ui.common.AppScaffold
 import com.example.nanameue_code_test.ui.common.ConfirmDialog
 import com.example.nanameue_code_test.ui.common.FullScreenLoading
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel = koinViewModel(), authViewModel: AuthViewModel = koinViewModel()
+    viewModel: ProfileViewModel = koinViewModel(), authViewModel: AuthViewModel = koinViewModel(),
+    navController: NavController
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -59,18 +55,9 @@ fun ProfileScreen(
         }
     }
 
-    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) },
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(title = { Text("Profile") }, navigationIcon = {
-                IconButton(onClick = { viewModel.navigateToTimeline() }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-            })
-        }) { innerPadding ->
+    AppScaffold(navController = navController, title = "Profile", true, snackbarHost = {
+        SnackbarHost(snackbarHostState)
+    }, content = { innerPadding ->
         if (showSignOutDialog) {
             ConfirmDialog({ showSignOutDialog = false },
                 "Confirm Sign Out",
@@ -95,7 +82,7 @@ fun ProfileScreen(
                 }
 
                 is AuthState.Error -> {
-                    AuthFailUi(authState) {
+                    AuthFailUi((authState as AuthState.Error).message) {
                         // todo: retry logic
                     }
                     return@Column
@@ -128,11 +115,13 @@ fun ProfileScreen(
                 }
                 Box(modifier = Modifier.weight(1f))
                 Button(
-                    onClick = { showSignOutDialog = true }, modifier = Modifier.fillMaxWidth()
+                    onClick = { showSignOutDialog = true },
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("Sign Out")
                 }
             }
         }
-    }
+
+    })
 }

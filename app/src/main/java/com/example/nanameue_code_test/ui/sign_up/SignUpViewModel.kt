@@ -9,18 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-data class SignUpUiState(
-    val displayName: String = "",
-    val email: String = "",
-    val password: String = "",
-    val confirmPassword: String = "",
-    val isDisplayNameValid: Boolean = false,
-    val isEmailValid: Boolean = false,
-    val isPasswordValid: Boolean = false,
-    val isConfirmPasswordValid: Boolean = false,
-    val isButtonEnabled: Boolean = false
-)
-
 sealed class SignUpEvent : NavigationEvent() {
     data object NavigateBack : SignUpEvent()
     data object NavigateToTimeline : SignUpEvent()
@@ -37,7 +25,6 @@ class SignUpViewModel : ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(
                 displayName = displayName,
-                isDisplayNameValid = displayName.isNotBlank()
             )
         }
     }
@@ -77,22 +64,33 @@ class SignUpViewModel : ViewModel() {
         }
     }
 
-    fun navigateBack() {
-        _navigationEvent.tryEmit(SignUpEvent.NavigateBack)
+    fun signUpStart() {
+        _uiState.update { it.copy(status = SignUpStatus.LOADING) }
     }
 
-    fun navigateToTimeline() {
-        _navigationEvent.tryEmit(SignUpEvent.NavigateToTimeline)
+    fun signUpSuccess() {
+        _uiState.update { it.copy(status = SignUpStatus.SUCCESS) }
+    }
+
+    fun signUpFailed(message: String) {
+        _uiState.update { it.copy(status = SignUpStatus.ERROR, errorMessage = message) }
+    }
+
+    fun resetStatus() {
+        _uiState.update { it.copy(status = SignUpStatus.INPUT, errorMessage = null) }
     }
 
     fun resetUiState() {
         _uiState.value = SignUpUiState()
     }
 
-    // todo remove after testing
+    fun navigateToTimeline() {
+        _navigationEvent.tryEmit(SignUpEvent.NavigateToTimeline)
+    }
+
     fun autoFillSignUpForTesting() {
-        _uiState.update { currentState ->
-            currentState.copy(
+        _uiState.update {
+            it.copy(
                 displayName = "abc",
                 email = "abc@abcde.com",
                 password = "12312312",
@@ -100,7 +98,8 @@ class SignUpViewModel : ViewModel() {
                 isConfirmPasswordValid = true,
                 isPasswordValid = true,
                 isEmailValid = true,
-                isButtonEnabled = true
+                isButtonEnabled = true,
+                status = SignUpStatus.INPUT
             )
         }
     }

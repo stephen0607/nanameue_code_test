@@ -5,10 +5,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 
-
 @Composable
-fun AuthFailUi(authState: AuthState, onDismiss: () -> Unit) {
-    val errorMessage = (authState as AuthState.Error).message
+fun AuthFailUi(message: String, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -17,13 +15,15 @@ fun AuthFailUi(authState: AuthState, onDismiss: () -> Unit) {
             }
         },
         title = { Text("Error") },
-        text = { Text(errorMessage) }
+        text = { Text(message) }
     )
 }
 
-
 @Composable
-fun AuthSuccessUi(onClick: () -> Unit) {
+fun AuthSuccessUi(
+    message: String = "Your account has been created.",
+    onClick: () -> Unit
+) {
     AlertDialog(
         onDismissRequest = {},
         confirmButton = {
@@ -32,6 +32,6 @@ fun AuthSuccessUi(onClick: () -> Unit) {
             }
         },
         title = { Text("Registration Successful") },
-        text = { Text("Your account has been created.") }
+        text = { Text(message) }
     )
 }

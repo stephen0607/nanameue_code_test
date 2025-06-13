@@ -19,15 +19,11 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,21 +40,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
 import coil.request.ImageRequest
 import com.example.nanameue_code_test.domain.usecase.timeline.Post
+import com.example.nanameue_code_test.ui.common.AppScaffold
 import org.koin.androidx.compose.koinViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimelineScreen(
     viewModel: TimelineViewModel = koinViewModel(),
+    navController: NavController
 ) {
     val scrollState = rememberScrollState()
     val uiState by viewModel.uiState.collectAsState()
@@ -67,60 +65,54 @@ fun TimelineScreen(
         viewModel.fetchTimeline()
     }
 
-    Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-        TopAppBar(
-            title = { Text("Timeline") },
-            actions = {
-                IconButton(onClick = { viewModel.navigateToProfile() }) {
-                    Icon(
-                        imageVector = Icons.Default.Person, contentDescription = "Go to Profile"
-                    )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                navigationIconContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            ),
-        )
-    }, floatingActionButton = {
-        FloatingActionButton(onClick = {
-            viewModel.navigateToCreatePost()
-        }) {
-            Icon(Icons.Default.Create, contentDescription = "Add")
-        }
-    }) { innerPadding ->
-
-        when (uiState) {
-            is TimelineUiState.Loading -> {
-                Box(
-                    Modifier.fillMaxSize()
-                ) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
+    AppScaffold(
+        navController = navController,
+        title = "Timeline",
+        actions = {
+            IconButton(onClick = { viewModel.navigateToProfile() }) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Go to Profile"
+                )
             }
-
-            is TimelineUiState.Success -> {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color.White)
-                        .padding(innerPadding)
-                        .verticalScroll(scrollState)
-                ) {
-                    val posts = (uiState as TimelineUiState.Success).posts
-                    posts.forEach {
-                        PostUi(it)
+        },
+        content = { innerPadding ->
+            when (uiState) {
+                is TimelineUiState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                     }
                 }
-            }
 
-            is TimelineUiState.Error -> {
-                val msg = (uiState as TimelineUiState.Error).message
-                Text("Error: $msg", color = Color.Red)
+                is TimelineUiState.Success -> {
+                    val posts = (uiState as TimelineUiState.Success).posts
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White)
+                            .padding(innerPadding)
+                            .verticalScroll(scrollState)
+                    ) {
+                        posts.forEach { PostUi(it) }
+                    }
+                }
+
+                is TimelineUiState.Error -> {
+                    val msg = (uiState as TimelineUiState.Error).message
+                    Text("Error: $msg", color = Color.Red)
+                }
             }
-        }
-    }
+        },
+
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { viewModel.navigateToCreatePost() },
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
+                Icon(Icons.Default.Create, contentDescription = "Add")
+            }
+        })
 }
 
 @Preview

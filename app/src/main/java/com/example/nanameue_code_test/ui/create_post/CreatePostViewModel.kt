@@ -15,14 +15,6 @@ sealed class CreatePostEvent : NavigationEvent() {
     data object NavigateToTimeline : CreatePostEvent()
 }
 
-data class CreatePostUiState(
-    val postContent: String = "",
-    val imageUri: Uri? = null,
-    val isPostButtonEnable: Boolean = false,
-    val isLoading: Boolean = false
-)
-
-
 class CreatePostViewModel(
     private val createPostUseCase: CreatePostUseCase
 ) : ViewModel() {
@@ -34,17 +26,16 @@ class CreatePostViewModel(
     val navigationEvent: SharedFlow<CreatePostEvent> = _navigationEvent
 
     fun onPostContentChanged(content: String) {
-        _uiState.value =
-            _uiState.value.copy(
-                postContent = content,
-                isPostButtonEnable = content.isNotBlank() || uiState.value.imageUri != null
-            )
+        _uiState.value = _uiState.value.copy(
+            postContent = content,
+            isPostButtonEnable = content.isNotBlank() || _uiState.value.imageUri != null
+        )
     }
 
     fun onImageSelected(uri: Uri?) {
         _uiState.value = _uiState.value.copy(
             imageUri = uri,
-            isPostButtonEnable = uri != null || uiState.value.postContent.isNotBlank()
+            isPostButtonEnable = uri != null || _uiState.value.postContent.isNotBlank()
         )
     }
 
@@ -54,16 +45,17 @@ class CreatePostViewModel(
 
     fun createPost() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(status = CreatePostStatus.LOADING)
             val state = _uiState.value
             try {
                 createPostUseCase.execute(state.postContent, state.imageUri)
-                _uiState.value = CreatePostUiState()
+                _uiState.value = CreatePostUiState(status = CreatePostStatus.SUCCESS)
                 _navigationEvent.emit(CreatePostEvent.NavigateToTimeline)
             } catch (e: Exception) {
-                // You can also emit an error event here if needed
-            } finally {
-                _uiState.value = _uiState.value.copy(isLoading = false)
+                _uiState.value = _uiState.value.copy(
+                    status = CreatePostStatus.ERROR,
+                    errorMessage = e.message ?: "Something went wrong"
+                )
             }
         }
     }
