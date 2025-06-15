@@ -4,23 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nanameue_code_test.NavigationEvent
 import com.example.nanameue_code_test.domain.usecase.timeline.GetLatestPostsUseCase
-import com.example.nanameue_code_test.domain.usecase.timeline.Post
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-// UI State
-sealed class TimelineUiState {
-    data object Loading : TimelineUiState()
-    data class Success(val posts: List<Post>) : TimelineUiState()
-    data class Error(val message: String) : TimelineUiState()
-}
-
 sealed class TimelineEvent : NavigationEvent() {
-    object NavigateToProfile : TimelineEvent()
-    object NavigateToCreatePost : TimelineEvent()
+    data object NavigateToProfile : TimelineEvent()
+    data object NavigateToCreatePost : TimelineEvent()
 }
 
 class TimelineViewModel(
