@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
 sealed class SignUpEvent : NavigationEvent() {
     data object NavigateBack : SignUpEvent()
@@ -15,24 +14,24 @@ sealed class SignUpEvent : NavigationEvent() {
 }
 
 class SignUpViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(SignUpUiState())
+    private val _uiState = MutableStateFlow<SignUpUiState>(SignUpUiState.Input())
     val uiState: StateFlow<SignUpUiState> = _uiState.asStateFlow()
 
     private val _navigationEvent = MutableSharedFlow<SignUpEvent>(replay = 1)
     val navigationEvent: SharedFlow<SignUpEvent> = _navigationEvent
 
     fun updateDisplayName(displayName: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                displayName = displayName,
-            )
+        val currentState = _uiState.value
+        if (currentState is SignUpUiState.Input) {
+            _uiState.value = currentState.copy(displayName = displayName)
         }
     }
 
     fun updateEmail(email: String) {
-        val isEmailValid = email.matches(Regex("^[A-Za-z0-9+_.-]+@(.+)\$"))
-        _uiState.update { currentState ->
-            currentState.copy(
+        val currentState = _uiState.value
+        if (currentState is SignUpUiState.Input) {
+            val isEmailValid = email.matches(Regex("^[A-Za-z0-9+_.-]+@(.+)\$"))
+            _uiState.value = currentState.copy(
                 email = email,
                 isEmailValid = isEmailValid,
                 isButtonEnabled = isEmailValid && currentState.isPasswordValid && currentState.isConfirmPasswordValid
@@ -41,9 +40,10 @@ class SignUpViewModel : ViewModel() {
     }
 
     fun updatePassword(password: String) {
-        val isPasswordValid = password.length >= 8
-        _uiState.update { currentState ->
-            currentState.copy(
+        val currentState = _uiState.value
+        if (currentState is SignUpUiState.Input) {
+            val isPasswordValid = password.length >= 8
+            _uiState.value = currentState.copy(
                 password = password,
                 isPasswordValid = isPasswordValid,
                 isConfirmPasswordValid = password == currentState.confirmPassword,
@@ -54,9 +54,10 @@ class SignUpViewModel : ViewModel() {
     }
 
     fun updateConfirmPassword(confirmPassword: String) {
-        val isConfirmPasswordValid = confirmPassword == _uiState.value.password
-        _uiState.update { currentState ->
-            currentState.copy(
+        val currentState = _uiState.value
+        if (currentState is SignUpUiState.Input) {
+            val isConfirmPasswordValid = confirmPassword == currentState.password
+            _uiState.value = currentState.copy(
                 confirmPassword = confirmPassword,
                 isConfirmPasswordValid = isConfirmPasswordValid,
                 isButtonEnabled = currentState.isEmailValid && currentState.isPasswordValid && isConfirmPasswordValid
@@ -65,23 +66,22 @@ class SignUpViewModel : ViewModel() {
     }
 
     fun signUpStart() {
-        _uiState.update { it.copy(status = SignUpStatus.LOADING) }
+        val currentState = _uiState.value
+        if (currentState is SignUpUiState.Input) {
+            _uiState.value = currentState.copy(isLoading = true)
+        }
     }
 
     fun signUpSuccess() {
-        _uiState.update { it.copy(status = SignUpStatus.SUCCESS) }
+        _uiState.value = SignUpUiState.Success
     }
 
     fun signUpFailed(message: String) {
-        _uiState.update { it.copy(status = SignUpStatus.ERROR, errorMessage = message) }
-    }
-
-    fun resetStatus() {
-        _uiState.update { it.copy(status = SignUpStatus.INPUT, errorMessage = null) }
+        _uiState.value = SignUpUiState.Error(message)
     }
 
     fun resetUiState() {
-        _uiState.value = SignUpUiState()
+        _uiState.value = SignUpUiState.Input()
     }
 
     fun navigateToTimeline() {
@@ -89,18 +89,15 @@ class SignUpViewModel : ViewModel() {
     }
 
     fun autoFillSignUpForTesting() {
-        _uiState.update {
-            it.copy(
-                displayName = "abc",
-                email = "abc@abcde.com",
-                password = "12312312",
-                confirmPassword = "12312312",
-                isConfirmPasswordValid = true,
-                isPasswordValid = true,
-                isEmailValid = true,
-                isButtonEnabled = true,
-                status = SignUpStatus.INPUT
-            )
-        }
+        _uiState.value = SignUpUiState.Input(
+            displayName = "abc",
+            email = "abc@abcde.com",
+            password = "12312312",
+            confirmPassword = "12312312",
+            isConfirmPasswordValid = true,
+            isPasswordValid = true,
+            isEmailValid = true,
+            isButtonEnabled = true
+        )
     }
 }

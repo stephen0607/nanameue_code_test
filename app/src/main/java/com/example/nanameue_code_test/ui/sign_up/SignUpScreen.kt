@@ -8,6 +8,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -15,9 +16,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.style.Dimensions
-import com.example.nanameue_code_test.ui.auth.ErrorDialog
-import com.example.nanameue_code_test.ui.auth.SuccessDialog
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
+import com.example.nanameue_code_test.ui.auth.ErrorDialog
 import com.example.nanameue_code_test.ui.common.AppScaffold
 import com.example.nanameue_code_test.ui.common.FieldSpacer
 import com.example.nanameue_code_test.ui.common.LoadingDialog
@@ -40,41 +40,51 @@ fun SignUpScreen(
         }
     }
 
+    LaunchedEffect(uiState) {
+        if (uiState is SignUpUiState.Success) {
+            viewModel.navigateToTimeline()
+        }
+    }
+
     AppScaffold(
         navController = navController,
         title = stringResource(R.string.sign_up),
         content = { paddingValues ->
             Box(Modifier.padding(paddingValues)) {
-                when (uiState.status) {
-                    SignUpStatus.LOADING -> LoadingDialog()
-                    SignUpStatus.SUCCESS -> SuccessDialog { viewModel.navigateToTimeline() }
-                    SignUpStatus.ERROR -> ErrorDialog(
-                        message = uiState.errorMessage
-                            ?: stringResource(R.string.registration_failed),
-                        onDismiss = {
-                            viewModel.resetStatus()
+                when (uiState) {
+                    is SignUpUiState.Input -> {
+                        val state = uiState as SignUpUiState.Input
+                        if (state.isLoading) {
+                            LoadingDialog()
+                        }
+                        SignUpForm(uiState as SignUpUiState.Input, viewModel) {
+                            viewModel.signUpStart()
+                            authViewModel.signUp(
+                                email = state.email,
+                                password = state.password,
+                                displayName = state.displayName,
+                                onResult = { result ->
+                                    result.onSuccess { viewModel.signUpSuccess() }
+                                        .onFailure {
+                                            viewModel.signUpFailed(
+                                                it.message ?: registrationFailedMsg
+                                            )
+                                        }
+                                }
+                            )
+                        }
+                    }
+
+                    is SignUpUiState.Success -> {
+                        viewModel.navigateToTimeline()
+                    }
+
+                    is SignUpUiState.Error -> {
+                        ErrorDialog((uiState as SignUpUiState.Error).message) {
+                            viewModel.resetUiState()
                             authViewModel.resetAuthState()
                         }
-                    )
-
-                    else -> {}
-                }
-
-                SignUpForm(uiState, viewModel) {
-                    viewModel.signUpStart()
-                    authViewModel.signUp(
-                        email = uiState.email,
-                        password = uiState.password,
-                        displayName = uiState.displayName,
-                        onResult = { result ->
-                            result.onSuccess { viewModel.signUpSuccess() }
-                                .onFailure {
-                                    viewModel.signUpFailed(
-                                        it.message ?: registrationFailedMsg
-                                    )
-                                }
-                        }
-                    )
+                    }
                 }
             }
         }
@@ -83,7 +93,7 @@ fun SignUpScreen(
 
 @Composable
 fun SignUpForm(
-    uiState: SignUpUiState,
+    uiState: SignUpUiState.Input,
     viewModel: SignUpViewModel,
     onSubmit: () -> Unit
 ) {
@@ -135,11 +145,12 @@ fun SignUpForm(
 
         Box(modifier = Modifier.weight(1f))
 
-        Button(onClick = onSubmit, enabled = uiState.isButtonEnabled) {
+        Button(
+            onClick = onSubmit,
+            enabled = uiState.isButtonEnabled && !uiState.isLoading
+        ) {
             Text(stringResource(R.string.sign_up))
         }
-
-        FieldSpacer()
 
         Button(onClick = { viewModel.autoFillSignUpForTesting() }) {
             Text("Auto Fill for Sign Up (Testing)") // optional to localize
