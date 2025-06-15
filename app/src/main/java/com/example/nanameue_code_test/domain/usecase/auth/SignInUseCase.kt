@@ -7,6 +7,12 @@ class SignInUseCase(
     private val authRepository: FirebaseAuthRepository
 ) {
     suspend operator fun invoke(email: String, password: String): Result<FirebaseUser> {
+        if (email.isBlank()) {
+            return Result.failure(IllegalArgumentException("Email cannot be empty"))
+        }
+        if (password.isBlank()) {
+            return Result.failure(IllegalArgumentException("Password cannot be empty"))
+        }
         return authRepository.signIn(email, password)
     }
 }

@@ -40,6 +40,22 @@ android {
     }
 }
 
+tasks.withType<Test> {
+    jvmArgs = listOf(
+        "-XX:+EnableDynamicAgentLoading",
+        "-Djdk.instrument.traceUsage=false"
+    )
+    
+    // Add test logging
+    testLogging {
+        events("passed", "skipped", "failed", "standardOut", "standardError")
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+        showStandardStreams = true
+    }
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -59,6 +75,8 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.coil.compose)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

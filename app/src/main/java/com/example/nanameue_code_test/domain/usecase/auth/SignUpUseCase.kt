@@ -11,6 +11,15 @@ class SignUpUseCase(
         email: String,
         password: String,
     ): Result<FirebaseUser> {
+        if (email.isBlank()) {
+            return Result.failure(IllegalArgumentException("Email cannot be empty"))
+        }
+        if (!email.matches(Regex("^[A-Za-z0-9+_.-]+@(.+)\$"))) {
+            return Result.failure(IllegalArgumentException("Invalid email format"))
+        }
+        if (password.isBlank()) {
+            return Result.failure(IllegalArgumentException("Password cannot be empty"))
+        }
         return authRepository.signUp(email, password)
     }
 }
