@@ -19,24 +19,30 @@ class CreatePostViewModel(
     private val createPostUseCase: CreatePostUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(CreatePostUiState())
+    private val _uiState = MutableStateFlow<CreatePostUiState>(CreatePostUiState.Input())
     val uiState: StateFlow<CreatePostUiState> = _uiState
 
     private val _navigationEvent = MutableSharedFlow<CreatePostEvent>(replay = 1)
     val navigationEvent: SharedFlow<CreatePostEvent> = _navigationEvent
 
     fun onPostContentChanged(content: String) {
-        _uiState.value = _uiState.value.copy(
-            postContent = content,
-            isPostButtonEnable = content.isNotBlank() || _uiState.value.imageUri != null
-        )
+        val currentState = _uiState.value
+        if (currentState is CreatePostUiState.Input) {
+            _uiState.value = currentState.copy(
+                postContent = content,
+                isPostButtonEnable = content.isNotBlank() || currentState.imageUri != null
+            )
+        }
     }
 
     fun onImageSelected(uri: Uri?) {
-        _uiState.value = _uiState.value.copy(
-            imageUri = uri,
-            isPostButtonEnable = uri != null || _uiState.value.postContent.isNotBlank()
-        )
+        val currentState = _uiState.value
+        if (currentState is CreatePostUiState.Input) {
+            _uiState.value = currentState.copy(
+                imageUri = uri,
+                isPostButtonEnable = uri != null || currentState.postContent.isNotBlank()
+            )
+        }
     }
 
     fun removeImage() {
@@ -44,17 +50,16 @@ class CreatePostViewModel(
     }
 
     fun createPost() {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(status = CreatePostStatus.LOADING)
-            val state = _uiState.value
-            try {
-                createPostUseCase.execute(state.postContent, state.imageUri)
-                _uiState.value = CreatePostUiState(status = CreatePostStatus.SUCCESS)
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    status = CreatePostStatus.ERROR,
-                    errorMessage = e.message ?: "Something went wrong"
-                )
+        val currentState = _uiState.value
+        if (currentState is CreatePostUiState.Input) {
+            viewModelScope.launch {
+                _uiState.value = CreatePostUiState.Loading
+                try {
+                    createPostUseCase.execute(currentState.postContent, currentState.imageUri)
+                    _uiState.value = CreatePostUiState.Success
+                } catch (e: Exception) {
+                    _uiState.value = CreatePostUiState.Error(e.message ?: "Something went wrong")
+                }
             }
         }
     }
@@ -64,6 +69,6 @@ class CreatePostViewModel(
     }
 
     fun resetUiState() {
-        _uiState.value = CreatePostUiState()
+        _uiState.value = CreatePostUiState.Input()
     }
 }

@@ -65,8 +65,8 @@ fun CreatePostScreen(
         }
     }
 
-    LaunchedEffect(uiState.status) {
-        if (uiState.status == CreatePostStatus.SUCCESS) {
+    LaunchedEffect(uiState) {
+        if (uiState is CreatePostUiState.Success) {
             createPostViewModel.createPostSuccessAction()
         }
     }
@@ -75,82 +75,98 @@ fun CreatePostScreen(
         navController = navController,
         title = stringResource(R.string.create_new_post),
         content = { paddingValues ->
-            Box(modifier = Modifier.fillMaxSize()) {
-                when (uiState.status) {
-                    CreatePostStatus.LOADING -> LoadingDialog()
-
-                    CreatePostStatus.ERROR -> {
-                        uiState.errorMessage?.let { msg ->
-                            AuthFailUi(msg) {
-                                createPostViewModel.resetUiState()
-                            }
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)) {
+                when (uiState) {
+                    is CreatePostUiState.Loading -> LoadingDialog()
+                    is CreatePostUiState.Error -> {
+                        AuthFailUi((uiState as CreatePostUiState.Error).message) {
+                            createPostViewModel.resetUiState()
                         }
                     }
 
-                    else -> {}
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .padding(Dimensions.paddingMedium)
-                ) {
-                    user?.let {
-                        val nameToShow = when {
-                            !it.displayName.isNullOrBlank() -> it.displayName
-                            !it.email.isNullOrBlank() -> it.email
-                            else -> null
-                        }
-                        nameToShow?.let { name ->
-                            Text(
-                                stringResource(R.string.current_user, name),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
+                    is CreatePostUiState.Input -> {
+                        CreatePostForm(
+                            uiState = uiState as CreatePostUiState.Input,
+                            viewModel = createPostViewModel,
+                            user = user,
+                            imagePickerLauncher = imagePickerLauncher
+                        )
                     }
 
-                    Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
-
-                    OutlinedTextField(
-                        value = uiState.postContent,
-                        onValueChange = createPostViewModel::onPostContentChanged,
-                        placeholder = { Text(stringResource(R.string.whats_happening)) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
-
-                    uiState.imageUri?.let { uri ->
-                        SelectedImageWithRemoveButton(uri) {
-                            createPostViewModel.removeImage()
-                        }
-                        Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        IconButton(onClick = { imagePickerLauncher.launch("image/*") }) {
-                            Icon(
-                                imageVector = Icons.Filled.AddCircle,
-                                contentDescription = "Add image",
-                            )
-                        }
-
-                        Button(
-                            onClick = { createPostViewModel.createPost() },
-                            enabled = uiState.isPostButtonEnable
-                        ) {
-                            Text(stringResource(R.string.post))
-
-                        }
+                    is CreatePostUiState.Success -> {
+                        // Navigation will be handled by LaunchedEffect
                     }
                 }
             }
         }
     )
+}
+
+@Composable
+private fun CreatePostForm(
+    uiState: CreatePostUiState.Input,
+    viewModel: CreatePostViewModel,
+    user: com.google.firebase.auth.FirebaseUser?,
+    imagePickerLauncher: androidx.activity.result.ActivityResultLauncher<String>
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(Dimensions.paddingMedium)
+    ) {
+        user?.let {
+            val nameToShow = when {
+                !it.displayName.isNullOrBlank() -> it.displayName
+                !it.email.isNullOrBlank() -> it.email
+                else -> null
+            }
+            nameToShow?.let { name ->
+                Text(
+                    stringResource(R.string.current_user, name),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
+
+        OutlinedTextField(
+            value = uiState.postContent,
+            onValueChange = viewModel::onPostContentChanged,
+            placeholder = { Text(stringResource(R.string.whats_happening)) },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
+
+        uiState.imageUri?.let { uri ->
+            SelectedImageWithRemoveButton(uri) {
+                viewModel.removeImage()
+            }
+            Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            IconButton(onClick = { imagePickerLauncher.launch("image/*") }) {
+                Icon(
+                    imageVector = Icons.Filled.AddCircle,
+                    contentDescription = "Add image",
+                )
+            }
+
+            Button(
+                onClick = { viewModel.createPost() },
+                enabled = uiState.isPostButtonEnable
+            ) {
+                Text(stringResource(R.string.post))
+            }
+        }
+    }
 }
 
 @Composable
