@@ -72,7 +72,8 @@ fun TimelineScreen(
             IconButton(onClick = { viewModel.navigateToProfile() }) {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = "Go to Profile"
+                    contentDescription = "Go to Profile",
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         },
@@ -89,7 +90,6 @@ fun TimelineScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color.White)
                             .padding(innerPadding)
                             .verticalScroll(scrollState)
                     ) {

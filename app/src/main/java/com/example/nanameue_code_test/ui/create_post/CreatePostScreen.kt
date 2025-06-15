@@ -142,7 +142,6 @@ fun SelectedImageWithRemoveButton(
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = "Remove Image",
-                tint = Color.White
             )
         }
     }
