@@ -14,10 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
+import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.style.Dimensions
 
 @Composable
@@ -48,7 +50,7 @@ fun FullScreenLoading() {
                 )
                 Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
 
-                Text("Loading ...", color = MaterialTheme.colorScheme.primary)
+                Text(stringResource(R.string.loading), color = MaterialTheme.colorScheme.primary)
             }
         }
     }

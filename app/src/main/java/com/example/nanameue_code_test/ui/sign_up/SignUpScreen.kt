@@ -11,8 +11,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.style.Dimensions
 import com.example.nanameue_code_test.ui.auth.AuthFailUi
 import com.example.nanameue_code_test.ui.auth.AuthSuccessUi
@@ -31,6 +32,7 @@ fun SignUpScreen(
     navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val registrationFailedMsg = stringResource(R.string.registration_failed)
 
     DisposableEffect(Unit) {
         onDispose {
@@ -40,14 +42,15 @@ fun SignUpScreen(
 
     AppScaffold(
         navController = navController,
-        title = "Sign Up",
+        title = stringResource(R.string.sign_up),
         content = { paddingValues ->
             Box(Modifier.padding(paddingValues)) {
                 when (uiState.status) {
                     SignUpStatus.LOADING -> LoadingDialog()
                     SignUpStatus.SUCCESS -> AuthSuccessUi { viewModel.navigateToTimeline() }
                     SignUpStatus.ERROR -> AuthFailUi(
-                        message = uiState.errorMessage ?: "Sign up failed",
+                        message = uiState.errorMessage
+                            ?: stringResource(R.string.registration_failed),
                         onDismiss = {
                             viewModel.resetStatus()
                             authViewModel.resetAuthState()
@@ -55,8 +58,8 @@ fun SignUpScreen(
                     )
 
                     else -> {}
-
                 }
+
                 SignUpForm(uiState, viewModel) {
                     viewModel.signUpStart()
                     authViewModel.signUp(
@@ -67,7 +70,7 @@ fun SignUpScreen(
                             result.onSuccess { viewModel.signUpSuccess() }
                                 .onFailure {
                                     viewModel.signUpFailed(
-                                        it.message ?: "Sign up failed"
+                                        it.message ?: registrationFailedMsg
                                     )
                                 }
                         }
@@ -85,26 +88,25 @@ fun SignUpForm(
     onSubmit: () -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .padding(Dimensions.paddingMedium),
+        modifier = Modifier.padding(Dimensions.paddingMedium),
         horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         SingleLineTextField(
             value = uiState.displayName,
             onValueChange = { viewModel.updateDisplayName(it) },
-            label = "Display Name (Optional)",
+            label = stringResource(R.string.display_name)
         )
         FieldSpacer()
 
         SingleLineTextField(
             value = uiState.email,
             onValueChange = { viewModel.updateEmail(it) },
-            label = "Email",
+            label = stringResource(R.string.email),
             isError = !uiState.isEmailValid && uiState.email.isNotEmpty()
         )
         if (!uiState.isEmailValid && uiState.email.isNotEmpty()) {
-            ValidationErrorText("Please enter a valid email")
+            ValidationErrorText(stringResource(R.string.error_invalid_email))
         }
 
         FieldSpacer()
@@ -112,11 +114,11 @@ fun SignUpForm(
         SingleLineTextField(
             value = uiState.password,
             onValueChange = { viewModel.updatePassword(it) },
-            label = "Password",
+            label = stringResource(R.string.password),
             isError = !uiState.isPasswordValid && uiState.password.isNotEmpty()
         )
         if (!uiState.isPasswordValid && uiState.password.isNotEmpty()) {
-            ValidationErrorText("Password must be at least 8 characters")
+            ValidationErrorText(stringResource(R.string.error_password_length))
         }
 
         FieldSpacer()
@@ -124,23 +126,23 @@ fun SignUpForm(
         SingleLineTextField(
             value = uiState.confirmPassword,
             onValueChange = { viewModel.updateConfirmPassword(it) },
-            label = "Confirm Password",
+            label = stringResource(R.string.confirm_password),
             isError = !uiState.isConfirmPasswordValid && uiState.confirmPassword.isNotEmpty()
         )
         if (!uiState.isConfirmPasswordValid && uiState.confirmPassword.isNotEmpty()) {
-            ValidationErrorText("Passwords do not match")
+            ValidationErrorText(stringResource(R.string.error_passwords_not_match))
         }
 
         Box(modifier = Modifier.weight(1f))
 
         Button(onClick = onSubmit, enabled = uiState.isButtonEnabled) {
-            Text("Sign Up")
+            Text(stringResource(R.string.sign_up))
         }
 
         FieldSpacer()
 
         Button(onClick = { viewModel.autoFillSignUpForTesting() }) {
-            Text("Auto Fill for Sign Up (Testing)")
+            Text("Auto Fill for Sign Up (Testing)") // optional to localize
         }
     }
 }

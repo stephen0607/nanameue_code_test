@@ -7,24 +7,24 @@ import androidx.compose.runtime.Composable
 
 @Composable
 fun ConfirmDialog(
-    onDismissRequest: () -> Unit,
+    onDismiss: () -> Unit,
     title: String,
-    text: String,
-    onClick: () -> Unit,
-    onDismissClick: () -> Unit
+    message: String,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit
 ) {
-    AlertDialog(onDismissRequest = onDismissRequest,
+    AlertDialog(onDismissRequest = onDismiss,
         title = { Text(title) },
-        text = { Text(text) },
+        text = { Text(message) },
         confirmButton = {
             TextButton(
-                onClick = onClick
+                onClick = onConfirm
             ) {
                 Text("Yes")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismissClick) {
+            TextButton(onClick = onCancel) {
                 Text("Cancel")
             }
         })

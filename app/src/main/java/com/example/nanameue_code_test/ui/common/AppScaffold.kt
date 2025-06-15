@@ -13,7 +13,6 @@ fun AppScaffold(
     showAppBar: Boolean = true,
     actions: @Composable RowScope.() -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
-    snackbarHost: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
 ) {
     Scaffold(
@@ -23,7 +22,6 @@ fun AppScaffold(
             }
         },
         content = content,
-        snackbarHost = snackbarHost,
         floatingActionButton = floatingActionButton
     )
 }

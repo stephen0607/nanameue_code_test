@@ -4,36 +4,21 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.style.Dimensions
 import com.example.nanameue_code_test.ui.auth.AuthFailUi
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
@@ -64,7 +49,7 @@ fun CreatePostScreen(
 
     AppScaffold(
         navController = navController,
-        title = "Create New Post",
+        title = stringResource(R.string.create_new_post),
         content = { paddingValues ->
             Box(modifier = Modifier.fillMaxSize()) {
                 when (uiState.status) {
@@ -93,7 +78,7 @@ fun CreatePostScreen(
                                 }
                                 nameToShow?.let { name ->
                                     Text(
-                                        "current user: $name",
+                                        stringResource(R.string.current_user, name),
                                         style = MaterialTheme.typography.bodyMedium
                                     )
                                 }
@@ -104,7 +89,7 @@ fun CreatePostScreen(
                             OutlinedTextField(
                                 value = uiState.postContent,
                                 onValueChange = createPostViewModel::onPostContentChanged,
-                                placeholder = { Text("What's happening? (optional)") },
+                                placeholder = { Text(stringResource(R.string.whats_happening)) },
                                 modifier = Modifier.fillMaxWidth()
                             )
 
@@ -132,14 +117,15 @@ fun CreatePostScreen(
                                     onClick = { createPostViewModel.createPost() },
                                     enabled = uiState.isPostButtonEnable
                                 ) {
-                                    Text("Post")
+                                    Text(stringResource(R.string.post))
                                 }
                             }
                         }
                     }
                 }
             }
-        })
+        }
+    )
 }
 
 @Composable

@@ -18,12 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
+import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.style.Dimensions
 
 @Composable
@@ -59,7 +61,7 @@ fun LoadingDialog() {
                 )
                 Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
 
-                Text("Loading ...", color = MaterialTheme.colorScheme.onPrimary)
+                Text(stringResource(R.string.loading), color = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }
