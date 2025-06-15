@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
+import com.example.nanameue_code_test.style.Dimensions
 
 @Composable
 fun FullScreenLoading() {
@@ -45,7 +46,7 @@ fun FullScreenLoading() {
                     strokeWidth = 3.dp,
                     color = MaterialTheme.colorScheme.primary
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
 
                 Text("Loading ...", color = MaterialTheme.colorScheme.primary)
             }

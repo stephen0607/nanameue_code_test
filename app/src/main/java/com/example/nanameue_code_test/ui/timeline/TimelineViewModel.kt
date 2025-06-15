@@ -29,7 +29,11 @@ class TimelineViewModel(
             _uiState.value = TimelineUiState.Loading
             val result = getLatestPostsUseCase.execute()
             result.onSuccess { postList ->
-                _uiState.value = TimelineUiState.Success(postList)
+                if (postList.isEmpty()) {
+                    _uiState.value = TimelineUiState.NoPost
+                } else {
+                    _uiState.value = TimelineUiState.Success(postList)
+                }
             }.onFailure { e ->
                 _uiState.value = TimelineUiState.Error(e.message ?: "Unknown error")
             }

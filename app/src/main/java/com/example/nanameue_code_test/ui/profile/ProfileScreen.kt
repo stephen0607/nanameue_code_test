@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.nanameue_code_test.style.Dimensions
 import com.example.nanameue_code_test.ui.auth.AuthFailUi
 import com.example.nanameue_code_test.ui.auth.AuthState
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
@@ -72,7 +73,7 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
+                .padding(Dimensions.paddingMedium), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (authState) {
                 is AuthState.Loading -> {
@@ -94,18 +95,18 @@ fun ProfileScreen(
                 Text(
                     text = "Welcome ${user.displayName}!",
                     style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = Dimensions.paddingMedium)
                 )
 
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = Dimensions.paddingSmall),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(Dimensions.paddingMedium)) {
                         user.email?.let {
                             Text("Email: $it", style = MaterialTheme.typography.bodyLarge)
                         }

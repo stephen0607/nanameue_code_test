@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.nanameue_code_test.style.Dimensions
 import com.example.nanameue_code_test.ui.auth.AuthFailUi
 import com.example.nanameue_code_test.ui.auth.AuthSuccessUi
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
@@ -85,7 +86,7 @@ fun SignUpForm(
 ) {
     Column(
         modifier = Modifier
-            .padding(16.dp),
+            .padding(Dimensions.paddingMedium),
         horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

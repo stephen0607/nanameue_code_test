@@ -32,9 +32,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.nanameue_code_test.style.Dimensions
 import com.example.nanameue_code_test.ui.auth.AuthFailUi
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.AppScaffold
@@ -83,28 +83,38 @@ fun CreatePostScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(paddingValues)
-                                .padding(16.dp)
+                                .padding(Dimensions.paddingMedium)
                         ) {
-                            user?.email?.let {
-                                Text(text = it, style = MaterialTheme.typography.bodyMedium)
+                            user?.let {
+                                val nameToShow = when {
+                                    !it.displayName.isNullOrBlank() -> it.displayName
+                                    !it.email.isNullOrBlank() -> it.email
+                                    else -> null
+                                }
+                                nameToShow?.let { name ->
+                                    Text(
+                                        "current user: $name",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
                             }
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
 
                             OutlinedTextField(
                                 value = uiState.postContent,
                                 onValueChange = createPostViewModel::onPostContentChanged,
-                                placeholder = { Text("What's happening?") },
+                                placeholder = { Text("What's happening? (optional)") },
                                 modifier = Modifier.fillMaxWidth()
                             )
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
 
                             uiState.imageUri?.let { uri ->
                                 SelectedImageWithRemoveButton(uri) {
                                     createPostViewModel.removeImage()
                                 }
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
                             }
 
                             Row(
@@ -153,7 +163,7 @@ fun SelectedImageWithRemoveButton(
             onClick = onRemoveImage,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(8.dp)
+                .padding(Dimensions.paddingSmall)
                 .background(Color.Black.copy(alpha = 0.5f), shape = CircleShape)
         ) {
             Icon(
