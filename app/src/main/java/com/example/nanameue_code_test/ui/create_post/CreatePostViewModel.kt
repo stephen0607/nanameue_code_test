@@ -50,7 +50,6 @@ class CreatePostViewModel(
             try {
                 createPostUseCase.execute(state.postContent, state.imageUri)
                 _uiState.value = CreatePostUiState(status = CreatePostStatus.SUCCESS)
-                _navigationEvent.emit(CreatePostEvent.NavigateToTimeline)
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     status = CreatePostStatus.ERROR,
@@ -60,7 +59,7 @@ class CreatePostViewModel(
         }
     }
 
-    fun navigateToTimeline() {
+    fun createPostSuccessAction() {
         _navigationEvent.tryEmit(CreatePostEvent.NavigateToTimeline)
     }
 

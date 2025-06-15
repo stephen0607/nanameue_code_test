@@ -4,13 +4,31 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,7 +41,7 @@ import com.example.nanameue_code_test.style.Dimensions
 import com.example.nanameue_code_test.ui.auth.AuthFailUi
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.AppScaffold
-import com.example.nanameue_code_test.ui.common.FullScreenLoading
+import com.example.nanameue_code_test.ui.common.LoadingDialog
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -47,13 +65,19 @@ fun CreatePostScreen(
         }
     }
 
+    LaunchedEffect(uiState.status) {
+        if (uiState.status == CreatePostStatus.SUCCESS) {
+            createPostViewModel.createPostSuccessAction()
+        }
+    }
+
     AppScaffold(
         navController = navController,
         title = stringResource(R.string.create_new_post),
         content = { paddingValues ->
             Box(modifier = Modifier.fillMaxSize()) {
                 when (uiState.status) {
-                    CreatePostStatus.LOADING -> FullScreenLoading()
+                    CreatePostStatus.LOADING -> LoadingDialog()
 
                     CreatePostStatus.ERROR -> {
                         uiState.errorMessage?.let { msg ->
@@ -63,63 +87,64 @@ fun CreatePostScreen(
                         }
                     }
 
-                    else -> {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(paddingValues)
-                                .padding(Dimensions.paddingMedium)
-                        ) {
-                            user?.let {
-                                val nameToShow = when {
-                                    !it.displayName.isNullOrBlank() -> it.displayName
-                                    !it.email.isNullOrBlank() -> it.email
-                                    else -> null
-                                }
-                                nameToShow?.let { name ->
-                                    Text(
-                                        stringResource(R.string.current_user, name),
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
+                    else -> {}
+                }
 
-                            Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
-
-                            OutlinedTextField(
-                                value = uiState.postContent,
-                                onValueChange = createPostViewModel::onPostContentChanged,
-                                placeholder = { Text(stringResource(R.string.whats_happening)) },
-                                modifier = Modifier.fillMaxWidth()
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(Dimensions.paddingMedium)
+                ) {
+                    user?.let {
+                        val nameToShow = when {
+                            !it.displayName.isNullOrBlank() -> it.displayName
+                            !it.email.isNullOrBlank() -> it.email
+                            else -> null
+                        }
+                        nameToShow?.let { name ->
+                            Text(
+                                stringResource(R.string.current_user, name),
+                                style = MaterialTheme.typography.bodyMedium
                             )
+                        }
+                    }
 
-                            Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
+                    Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
 
-                            uiState.imageUri?.let { uri ->
-                                SelectedImageWithRemoveButton(uri) {
-                                    createPostViewModel.removeImage()
-                                }
-                                Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
-                            }
+                    OutlinedTextField(
+                        value = uiState.postContent,
+                        onValueChange = createPostViewModel::onPostContentChanged,
+                        placeholder = { Text(stringResource(R.string.whats_happening)) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                IconButton(onClick = { imagePickerLauncher.launch("image/*") }) {
-                                    Icon(
-                                        imageVector = Icons.Filled.AddCircle,
-                                        contentDescription = "Add image",
-                                    )
-                                }
+                    Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
 
-                                Button(
-                                    onClick = { createPostViewModel.createPost() },
-                                    enabled = uiState.isPostButtonEnable
-                                ) {
-                                    Text(stringResource(R.string.post))
-                                }
-                            }
+                    uiState.imageUri?.let { uri ->
+                        SelectedImageWithRemoveButton(uri) {
+                            createPostViewModel.removeImage()
+                        }
+                        Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        IconButton(onClick = { imagePickerLauncher.launch("image/*") }) {
+                            Icon(
+                                imageVector = Icons.Filled.AddCircle,
+                                contentDescription = "Add image",
+                            )
+                        }
+
+                        Button(
+                            onClick = { createPostViewModel.createPost() },
+                            enabled = uiState.isPostButtonEnable
+                        ) {
+                            Text(stringResource(R.string.post))
+
                         }
                     }
                 }
