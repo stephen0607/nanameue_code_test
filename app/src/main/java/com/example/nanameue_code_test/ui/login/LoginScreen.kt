@@ -106,7 +106,7 @@ fun LoginScreen(
                     },
                     enabled = uiState.isButtonEnabled
                 ) {
-                    Text("Login")
+                    Text(stringResource(R.string.login))
                 }
 
                 FieldSpacer()
