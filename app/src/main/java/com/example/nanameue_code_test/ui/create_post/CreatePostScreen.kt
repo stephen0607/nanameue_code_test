@@ -38,7 +38,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.style.Dimensions
-import com.example.nanameue_code_test.ui.auth.AuthFailUi
+import com.example.nanameue_code_test.ui.auth.ErrorDialog
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.AppScaffold
 import com.example.nanameue_code_test.ui.common.LoadingDialog
@@ -81,7 +81,7 @@ fun CreatePostScreen(
                 when (uiState) {
                     is CreatePostUiState.Loading -> LoadingDialog()
                     is CreatePostUiState.Error -> {
-                        AuthFailUi((uiState as CreatePostUiState.Error).message) {
+                        ErrorDialog((uiState as CreatePostUiState.Error).message) {
                             createPostViewModel.resetUiState()
                         }
                     }

@@ -9,12 +9,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.style.Dimensions
-import com.example.nanameue_code_test.ui.auth.AuthFailUi
+import com.example.nanameue_code_test.ui.auth.ErrorDialog
 import com.example.nanameue_code_test.ui.auth.AuthState
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.*
@@ -47,7 +45,7 @@ fun LoginScreen(
         content = { paddingValues ->
             when (authState) {
                 is AuthState.Error -> if (showDialog) {
-                    AuthFailUi((authState as AuthState.Error).message) {
+                    ErrorDialog((authState as AuthState.Error).message) {
                         showDialog = false
                         authViewModel.resetAuthState()
                     }

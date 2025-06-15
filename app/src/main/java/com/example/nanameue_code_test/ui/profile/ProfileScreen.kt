@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.style.Dimensions
-import com.example.nanameue_code_test.ui.auth.AuthFailUi
+import com.example.nanameue_code_test.ui.auth.ErrorDialog
 import com.example.nanameue_code_test.ui.auth.AuthState
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.AppScaffold
@@ -78,7 +78,7 @@ fun ProfileScreen(
                     }
 
                     is AuthState.Error -> {
-                        AuthFailUi((authState as AuthState.Error).message) {
+                        ErrorDialog((authState as AuthState.Error).message) {
                             // TODO: Add retry logic
                         }
                         return@Column

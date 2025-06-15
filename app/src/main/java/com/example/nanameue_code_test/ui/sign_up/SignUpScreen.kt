@@ -15,8 +15,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.style.Dimensions
-import com.example.nanameue_code_test.ui.auth.AuthFailUi
-import com.example.nanameue_code_test.ui.auth.AuthSuccessUi
+import com.example.nanameue_code_test.ui.auth.ErrorDialog
+import com.example.nanameue_code_test.ui.auth.SuccessDialog
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.AppScaffold
 import com.example.nanameue_code_test.ui.common.FieldSpacer
@@ -47,8 +47,8 @@ fun SignUpScreen(
             Box(Modifier.padding(paddingValues)) {
                 when (uiState.status) {
                     SignUpStatus.LOADING -> LoadingDialog()
-                    SignUpStatus.SUCCESS -> AuthSuccessUi { viewModel.navigateToTimeline() }
-                    SignUpStatus.ERROR -> AuthFailUi(
+                    SignUpStatus.SUCCESS -> SuccessDialog { viewModel.navigateToTimeline() }
+                    SignUpStatus.ERROR -> ErrorDialog(
                         message = uiState.errorMessage
                             ?: stringResource(R.string.registration_failed),
                         onDismiss = {

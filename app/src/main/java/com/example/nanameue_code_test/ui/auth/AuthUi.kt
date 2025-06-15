@@ -8,7 +8,7 @@ import androidx.compose.ui.res.stringResource
 import com.example.nanameue_code_test.R
 
 @Composable
-fun AuthFailUi(message: String, onDismiss: () -> Unit) {
+fun ErrorDialog(message: String, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -22,7 +22,7 @@ fun AuthFailUi(message: String, onDismiss: () -> Unit) {
 }
 
 @Composable
-fun AuthSuccessUi(
+fun SuccessDialog(
     message: String = stringResource(R.string.account_created),
     onClick: () -> Unit
 ) {
