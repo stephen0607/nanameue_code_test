@@ -1,19 +1,29 @@
 package com.example.nanameue_code_test.ui.sign_up
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.nanameue_code_test.NavigationEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 sealed class SignUpEvent : NavigationEvent() {
     data object NavigateBack : SignUpEvent()
     data object NavigateToTimeline : SignUpEvent()
 }
 
+sealed class SignUpUiEvent {
+    data object Success : SignUpUiEvent()
+    data class Error(val message: String) : SignUpUiEvent()
+}
+
 class SignUpViewModel : ViewModel() {
+    private val _uiEvent = MutableSharedFlow<SignUpUiEvent>(replay = 0)
+    val uiEvent: SharedFlow<SignUpUiEvent> = _uiEvent
+
     private val _uiState = MutableStateFlow<SignUpUiState>(SignUpUiState.Input())
     val uiState: StateFlow<SignUpUiState> = _uiState.asStateFlow()
 
@@ -73,11 +83,22 @@ class SignUpViewModel : ViewModel() {
     }
 
     fun signUpSuccess() {
-        _uiState.value = SignUpUiState.Success
+        viewModelScope.launch {
+            _uiEvent.emit(SignUpUiEvent.Success)
+        }
     }
 
     fun signUpFailed(message: String) {
-        _uiState.value = SignUpUiState.Error(message)
+        viewModelScope.launch {
+            _uiEvent.emit(SignUpUiEvent.Error(message))
+        }
+    }
+
+    fun onDialogDismissAction(){
+        val currentState = _uiState.value
+        if(currentState is SignUpUiState.Input){
+            _uiState.value =  currentState.copy(isLoading = false)
+        }
     }
 
     fun resetUiState() {

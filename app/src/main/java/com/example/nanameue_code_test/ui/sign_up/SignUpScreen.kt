@@ -11,13 +11,16 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.style.Dimensions
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
-import com.example.nanameue_code_test.ui.auth.ErrorDialog
+import com.example.nanameue_code_test.ui.common.ErrorDialog
 import com.example.nanameue_code_test.ui.common.AppScaffold
 import com.example.nanameue_code_test.ui.common.FieldSpacer
 import com.example.nanameue_code_test.ui.common.LoadingDialog
@@ -33,6 +36,7 @@ fun SignUpScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val registrationFailedMsg = stringResource(R.string.registration_failed)
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -40,9 +44,12 @@ fun SignUpScreen(
         }
     }
 
-    LaunchedEffect(uiState) {
-        if (uiState is SignUpUiState.Success) {
-            viewModel.navigateToTimeline()
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is SignUpUiEvent.Success -> viewModel.navigateToTimeline()
+                is SignUpUiEvent.Error -> { errorMessage = event.message }
+            }
         }
     }
 
@@ -57,7 +64,7 @@ fun SignUpScreen(
                         if (state.isLoading) {
                             LoadingDialog()
                         }
-                        SignUpForm(uiState as SignUpUiState.Input, viewModel) {
+                        SignUpForm(state, viewModel) {
                             viewModel.signUpStart()
                             authViewModel.signUp(
                                 email = state.email,
@@ -75,15 +82,15 @@ fun SignUpScreen(
                         }
                     }
 
-                    is SignUpUiState.Success -> {
-                        viewModel.navigateToTimeline()
-                    }
+                    is SignUpUiState.Error -> TODO()
+                    SignUpUiState.Success -> TODO()
+                }
 
-                    is SignUpUiState.Error -> {
-                        ErrorDialog((uiState as SignUpUiState.Error).message) {
-                            viewModel.resetUiState()
-                            authViewModel.resetAuthState()
-                        }
+                errorMessage?.let { message ->
+                    ErrorDialog(message) {
+                        errorMessage = null
+                        viewModel.onDialogDismissAction()
+                        authViewModel.resetAuthState()
                     }
                 }
             }

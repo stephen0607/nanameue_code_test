@@ -1,4 +1,4 @@
-package com.example.nanameue_code_test.ui.auth
+package com.example.nanameue_code_test.ui.common
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -17,23 +17,6 @@ fun ErrorDialog(message: String, onDismiss: () -> Unit) {
             }
         },
         title = { Text(stringResource(R.string.authentication_failed)) },
-        text = { Text(message) }
-    )
-}
-
-@Composable
-fun SuccessDialog(
-    message: String = stringResource(R.string.account_created),
-    onClick: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = {},
-        confirmButton = {
-            TextButton(onClick = onClick) {
-                Text(stringResource(R.string.go_to_timeline))
-            }
-        },
-        title = { Text(stringResource(R.string.registration_successful)) },
         text = { Text(message) }
     )
 }
