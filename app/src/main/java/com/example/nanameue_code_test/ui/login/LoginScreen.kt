@@ -27,7 +27,7 @@ import com.example.nanameue_code_test.ui.auth.AuthState
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.AppScaffold
 import com.example.nanameue_code_test.ui.common.FieldSpacer
-import com.example.nanameue_code_test.ui.common.FullScreenLoading
+import com.example.nanameue_code_test.ui.common.LoadingDialog
 import com.example.nanameue_code_test.ui.common.SingleLineTextField
 import com.example.nanameue_code_test.ui.common.ValidationErrorText
 import org.koin.androidx.compose.koinViewModel
@@ -65,10 +65,9 @@ fun LoginScreen(
                     }
                 }
 
-                is AuthState.Loading -> FullScreenLoading()
+                is AuthState.Loading -> LoadingDialog()
                 else -> {}
             }
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()

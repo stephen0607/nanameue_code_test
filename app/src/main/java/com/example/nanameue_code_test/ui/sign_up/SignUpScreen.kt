@@ -18,7 +18,7 @@ import com.example.nanameue_code_test.ui.auth.AuthSuccessUi
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.AppScaffold
 import com.example.nanameue_code_test.ui.common.FieldSpacer
-import com.example.nanameue_code_test.ui.common.FullScreenLoading
+import com.example.nanameue_code_test.ui.common.LoadingDialog
 import com.example.nanameue_code_test.ui.common.SingleLineTextField
 import com.example.nanameue_code_test.ui.common.ValidationErrorText
 import org.koin.androidx.compose.koinViewModel
@@ -32,7 +32,9 @@ fun SignUpScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     DisposableEffect(Unit) {
-        onDispose { viewModel.resetUiState() }
+        onDispose {
+            viewModel.resetUiState()
+        }
     }
 
     AppScaffold(
@@ -41,29 +43,34 @@ fun SignUpScreen(
         content = { paddingValues ->
             Box(Modifier.padding(paddingValues)) {
                 when (uiState.status) {
-                    SignUpStatus.LOADING -> FullScreenLoading()
+                    SignUpStatus.LOADING -> LoadingDialog()
                     SignUpStatus.SUCCESS -> AuthSuccessUi { viewModel.navigateToTimeline() }
                     SignUpStatus.ERROR -> AuthFailUi(
                         message = uiState.errorMessage ?: "Sign up failed",
-                        onDismiss = { viewModel.resetStatus() }
+                        onDismiss = {
+                            viewModel.resetStatus()
+                            authViewModel.resetAuthState()
+                        }
                     )
 
-                    SignUpStatus.INPUT -> SignUpForm(uiState, viewModel) {
-                        viewModel.signUpStart()
-                        authViewModel.signUp(
-                            email = uiState.email,
-                            password = uiState.password,
-                            displayName = uiState.displayName,
-                            onResult = { result ->
-                                result.onSuccess { viewModel.signUpSuccess() }
-                                    .onFailure {
-                                        viewModel.signUpFailed(
-                                            it.message ?: "Sign up failed"
-                                        )
-                                    }
-                            }
-                        )
-                    }
+                    else -> {}
+
+                }
+                SignUpForm(uiState, viewModel) {
+                    viewModel.signUpStart()
+                    authViewModel.signUp(
+                        email = uiState.email,
+                        password = uiState.password,
+                        displayName = uiState.displayName,
+                        onResult = { result ->
+                            result.onSuccess { viewModel.signUpSuccess() }
+                                .onFailure {
+                                    viewModel.signUpFailed(
+                                        it.message ?: "Sign up failed"
+                                    )
+                                }
+                        }
+                    )
                 }
             }
         }
@@ -85,7 +92,7 @@ fun SignUpForm(
         SingleLineTextField(
             value = uiState.displayName,
             onValueChange = { viewModel.updateDisplayName(it) },
-            label = "DisplayName",
+            label = "Display Name (Optional)",
         )
         FieldSpacer()
 
