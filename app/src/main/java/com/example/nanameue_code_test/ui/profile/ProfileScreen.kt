@@ -89,7 +89,7 @@ fun ProfileScreen(
 
                 userInfo?.let { user ->
                     Text(
-                        text = stringResource(R.string.welcome_user,    "123"),
+                        text = stringResource(R.string.welcome_user, user.displayName?:""),
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.padding(bottom = Dimensions.paddingMedium)
                     )
