@@ -34,13 +34,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.nanameue_code_test.R
+import com.example.nanameue_code_test.domain.usecase.create_post.FakeCreatePostUseCase
 import com.example.nanameue_code_test.style.Dimensions
-import com.example.nanameue_code_test.ui.common.ErrorDialog
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.AppScaffold
+import com.example.nanameue_code_test.ui.common.ErrorDialog
 import com.example.nanameue_code_test.ui.common.LoadingDialog
 import org.koin.androidx.compose.koinViewModel
 
@@ -75,9 +77,11 @@ fun CreatePostScreen(
         navController = navController,
         title = stringResource(R.string.create_new_post),
         content = { paddingValues ->
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
                 when (uiState) {
                     is CreatePostUiState.Loading -> LoadingDialog()
                     is CreatePostUiState.Error -> {
@@ -87,10 +91,17 @@ fun CreatePostScreen(
                     }
 
                     is CreatePostUiState.Input -> {
+                        val nameToShow = user?.let {
+                            when {
+                                !it.displayName.isNullOrBlank() -> it.displayName
+                                !it.email.isNullOrBlank() -> it.email
+                                else -> null
+                            }
+                        }
                         CreatePostForm(
                             uiState = uiState as CreatePostUiState.Input,
                             viewModel = createPostViewModel,
-                            user = user,
+                            nameToShow = nameToShow,
                             imagePickerLauncher = imagePickerLauncher
                         )
                     }
@@ -108,7 +119,7 @@ fun CreatePostScreen(
 private fun CreatePostForm(
     uiState: CreatePostUiState.Input,
     viewModel: CreatePostViewModel,
-    user: com.google.firebase.auth.FirebaseUser?,
+    nameToShow: String?,
     imagePickerLauncher: androidx.activity.result.ActivityResultLauncher<String>
 ) {
     Column(
@@ -116,18 +127,11 @@ private fun CreatePostForm(
             .fillMaxSize()
             .padding(Dimensions.paddingMedium)
     ) {
-        user?.let {
-            val nameToShow = when {
-                !it.displayName.isNullOrBlank() -> it.displayName
-                !it.email.isNullOrBlank() -> it.email
-                else -> null
-            }
-            nameToShow?.let { name ->
-                Text(
-                    stringResource(R.string.current_user, name),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+        nameToShow?.let { name ->
+            Text(
+                stringResource(R.string.current_user, name),
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
 
         Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
@@ -199,4 +203,52 @@ fun SelectedImageWithRemoveButton(
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CreatePostFormPreview() {
+    val dummyState = CreatePostUiState.Input(
+        postContent = "This is a preview post.",
+        imageUri = null,
+        isPostButtonEnable = true
+    )
+
+    val fakeViewModel = object : CreatePostViewModel(createPostUseCase = FakeCreatePostUseCase()) {}
+
+
+    val dummyLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { /* no-op */ }
+
+    CreatePostForm(
+        uiState = dummyState,
+        viewModel = fakeViewModel,
+        nameToShow = "fake user",
+        imagePickerLauncher = dummyLauncher
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CreatePostFormEmptyPreview() {
+    val dummyState = CreatePostUiState.Input(
+        postContent = "",
+        imageUri = null,
+        isPostButtonEnable = false
+    )
+
+    val fakeViewModel = object : CreatePostViewModel(createPostUseCase = FakeCreatePostUseCase()) {}
+
+
+    val dummyLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { /* no-op */ }
+
+    CreatePostForm(
+        uiState = dummyState,
+        viewModel = fakeViewModel,
+        nameToShow = "fake user",
+        imagePickerLauncher = dummyLauncher
+    )
 }

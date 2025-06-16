@@ -10,8 +10,8 @@ class CreatePostUseCase(
     private val auth: FirebaseAuth,
     private val storage: FirebaseStorage,
     private val firestore: FirebaseFirestore
-) {
-    suspend fun execute(title: String, imageUri: Uri?): Result<Unit> {
+) : ICreatePostUseCase {
+    override suspend fun execute(title: String, imageUri: Uri?): Result<Unit> {
         val currentUser = auth.currentUser ?: return Result.failure(Exception("User not logged in"))
         val id = currentUser.uid
         val displayName = currentUser.displayName.orEmpty()
@@ -46,5 +46,15 @@ class CreatePostUseCase(
             "timestamp" to System.currentTimeMillis()
         )
         firestore.collection("posts").add(post).await()
+    }
+}
+
+interface ICreatePostUseCase {
+    suspend fun execute(title: String, imageUri: Uri?): Result<Unit>
+}
+
+class FakeCreatePostUseCase : ICreatePostUseCase {
+    override suspend fun execute(title: String, imageUri: Uri?): Result<Unit> {
+        return Result.success(Unit)
     }
 }

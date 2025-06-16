@@ -16,17 +16,56 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.style.Dimensions
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
-import com.example.nanameue_code_test.ui.common.ErrorDialog
 import com.example.nanameue_code_test.ui.common.AppScaffold
+import com.example.nanameue_code_test.ui.common.ErrorDialog
 import com.example.nanameue_code_test.ui.common.FieldSpacer
 import com.example.nanameue_code_test.ui.common.LoadingDialog
 import com.example.nanameue_code_test.ui.common.SingleLineTextField
 import com.example.nanameue_code_test.ui.common.ValidationErrorText
 import org.koin.androidx.compose.koinViewModel
+
+@Preview(showBackground = true)
+@Composable
+fun SignUpFormPreview() {
+    SignUpForm(
+        uiState = SignUpUiState.Input(
+            displayName = "John Doe",
+            email = "john@example.com",
+            password = "password123",
+            confirmPassword = "password123",
+            isEmailValid = true,
+            isPasswordValid = true,
+            isConfirmPasswordValid = true,
+            isButtonEnabled = true
+        ),
+        viewModel = SignUpViewModel(),
+        onSubmit = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SignUpFormWithErrorsPreview() {
+    SignUpForm(
+        uiState = SignUpUiState.Input(
+            displayName = "John Doe",
+            email = "invalid-email",
+            password = "short",
+            confirmPassword = "different",
+            isEmailValid = false,
+            isPasswordValid = false,
+            isConfirmPasswordValid = false,
+            isButtonEnabled = false
+        ),
+        viewModel = SignUpViewModel(),
+        onSubmit = {}
+    )
+}
 
 @Composable
 fun SignUpScreen(
@@ -48,7 +87,9 @@ fun SignUpScreen(
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is SignUpUiEvent.Success -> viewModel.navigateToTimeline()
-                is SignUpUiEvent.Error -> { errorMessage = event.message }
+                is SignUpUiEvent.Error -> {
+                    errorMessage = event.message
+                }
             }
         }
     }

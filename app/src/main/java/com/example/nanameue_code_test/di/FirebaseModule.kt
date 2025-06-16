@@ -37,7 +37,6 @@ val firebaseModule = module {
 
     // Use Cases
     single { GetAuthStateUseCase(get()) }
-    single { CreatePostUseCase(get(), get(), get()) }
     single { SignInUseCase(get()) }
     single { SignOutUseCase(get()) }
     single { SignUpUseCase(get()) }
