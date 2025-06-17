@@ -18,7 +18,6 @@ sealed class CreatePostEvent : NavigationEvent() {
 open class CreatePostViewModel(
     private val createPostUseCase: ICreatePostUseCase
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow<CreatePostUiState>(CreatePostUiState.Input())
     val uiState: StateFlow<CreatePostUiState> = _uiState
 

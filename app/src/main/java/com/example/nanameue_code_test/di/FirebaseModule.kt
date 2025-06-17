@@ -7,13 +7,11 @@ import com.example.nanameue_code_test.domain.usecase.auth.SignInUseCase
 import com.example.nanameue_code_test.domain.usecase.auth.SignOutUseCase
 import com.example.nanameue_code_test.domain.usecase.auth.SignUpUseCase
 import com.example.nanameue_code_test.domain.usecase.auth.UpdateDisplayNameUseCase
-import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val firebaseModule = module {
@@ -31,9 +29,6 @@ val firebaseModule = module {
 
     // Repository
     single<FirebaseAuthRepository> { FirebaseAuthRepositoryImpl(get()) }
-
-    // ViewModel
-    viewModel { AuthViewModel(get(), get(), get(), get()) }
 
     // Use Cases
     single { GetAuthStateUseCase(get()) }

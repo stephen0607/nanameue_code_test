@@ -5,7 +5,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.create_post.CreatePostEvent
 import com.example.nanameue_code_test.ui.create_post.CreatePostScreen
 import com.example.nanameue_code_test.ui.create_post.CreatePostViewModel
@@ -36,7 +35,6 @@ fun NavigationStack() {
     val timelineViewModel: TimelineViewModel = koinViewModel()
     val profileViewModel: ProfileViewModel = koinViewModel()
     val createPostViewModel: CreatePostViewModel = koinViewModel()
-    val authViewModel: AuthViewModel = koinViewModel()
     val splashViewModel: SplashViewModel = koinViewModel()
 
     LaunchedEffect(Unit) {
@@ -109,7 +107,7 @@ fun NavigationStack() {
             ProfileScreen(profileViewModel, navController)
         }
         composable(route = Screen.CreatePost.route) {
-            CreatePostScreen(createPostViewModel, authViewModel, navController)
+            CreatePostScreen(createPostViewModel, navController)
         }
     }
 }

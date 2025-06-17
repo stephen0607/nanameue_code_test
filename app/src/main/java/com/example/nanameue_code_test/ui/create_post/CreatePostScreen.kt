@@ -40,20 +40,19 @@ import coil.compose.AsyncImage
 import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.domain.usecase.create_post.FakeCreatePostUseCase
 import com.example.nanameue_code_test.style.Dimensions
-import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.AppScaffold
 import com.example.nanameue_code_test.ui.common.ErrorDialog
 import com.example.nanameue_code_test.ui.common.LoadingDialog
+import com.google.firebase.auth.FirebaseAuth
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CreatePostScreen(
     createPostViewModel: CreatePostViewModel = koinViewModel(),
-    authViewModel: AuthViewModel = koinViewModel(),
     navController: NavController
 ) {
     val uiState by createPostViewModel.uiState.collectAsState()
-    val user = authViewModel.getUserInfo()
+    val user = FirebaseAuth.getInstance().currentUser
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
