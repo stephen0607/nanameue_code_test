@@ -15,7 +15,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    // viewModel
+    // ViewModels
     viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel(get(), get()) }
     viewModel { TimelineViewModel(get()) }
@@ -23,9 +23,11 @@ val appModule = module {
     viewModel { CreatePostViewModel(get()) }
     viewModel { SplashViewModel(get()) }
 
-    // Use Cases
+    // Use Cases: Timeline & Post
     single { GetLatestPostsUseCase(get()) }
     single<ICreatePostUseCase> { CreatePostUseCase(get(), get(), get()) }
+
+    // Use Cases: User
     single { GetUserInfoUseCase() }
     single { SignOutUseCase(get()) }
 }
