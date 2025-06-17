@@ -1,23 +1,35 @@
 package com.example.nanameue_code_test.ui.login
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.nanameue_code_test.NavigationEvent
+import com.example.nanameue_code_test.domain.usecase.auth.SignInUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-
+import kotlinx.coroutines.launch
 
 sealed class LoginEvent : NavigationEvent() {
     data object NavigateToTimeline : LoginEvent()
     data object NavigateToSignUp : LoginEvent()
 }
 
-class LoginViewModel : ViewModel() {
+sealed class LoginUiEvent {
+    data object Success : LoginUiEvent()
+    data class Error(val message: String) : LoginUiEvent()
+}
+
+class LoginViewModel(
+    private val signInUseCase: SignInUseCase
+) : ViewModel() {
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+
+    private val _uiEvent = MutableSharedFlow<LoginUiEvent>(replay = 0)
+    val uiEvent: SharedFlow<LoginUiEvent> = _uiEvent
 
     private val _navigationEvent = MutableSharedFlow<LoginEvent>(replay = 1)
     val navigationEvent: SharedFlow<LoginEvent> = _navigationEvent
@@ -49,7 +61,23 @@ class LoginViewModel : ViewModel() {
     }
 
     fun login() {
-        _navigationEvent.tryEmit(LoginEvent.NavigateToTimeline)
+        val currentState = _uiState.value
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            signInUseCase(currentState.email, currentState.password)
+                .onSuccess {
+                    _uiEvent.emit(LoginUiEvent.Success)
+                    _navigationEvent.emit(LoginEvent.NavigateToTimeline)
+                }
+                .onFailure {
+                    _uiEvent.emit(LoginUiEvent.Error(it.message ?: "Authentication failed"))
+                }
+            _uiState.update { it.copy(isLoading = false) }
+        }
+    }
+
+    fun onDialogDismissAction() {
+        _uiState.update { it.copy(isLoading = false) }
     }
 
     fun resetUiState() {

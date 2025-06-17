@@ -92,7 +92,7 @@ fun NavigationStack() {
             SplashScreen(splashViewModel)
         }
         composable(route = Screen.Login.route) {
-            LoginScreen(loginViewModel, authViewModel, navController)
+            LoginScreen(loginViewModel, navController)
         }
         composable(route = Screen.SignUp.route) {
             SignUpScreen(signUpViewModel, authViewModel, navController)

@@ -11,8 +11,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.nanameue_code_test.R
-import com.example.nanameue_code_test.ui.auth.AuthState
-import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.AppScaffold
 import com.example.nanameue_code_test.ui.common.ErrorDialog
 import com.example.nanameue_code_test.ui.common.LoadingDialog
@@ -21,21 +19,25 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = koinViewModel(),
-    authViewModel: AuthViewModel = koinViewModel(),
     navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val authState by authViewModel.authState.collectAsState()
-    var showDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     DisposableEffect(Unit) {
         onDispose { viewModel.resetUiState() }
     }
 
-    LaunchedEffect(authState) {
-        showDialog = authState is AuthState.Error
-        if (authState is AuthState.Success) {
-            viewModel.login()
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is LoginUiEvent.Success -> {
+                    // Navigation is handled by the ViewModel
+                }
+                is LoginUiEvent.Error -> {
+                    errorMessage = event.message
+                }
+            }
         }
     }
 
@@ -43,17 +45,8 @@ fun LoginScreen(
         navController = navController,
         title = stringResource(R.string.login),
         content = { paddingValues ->
-
-            when (authState) {
-                is AuthState.Error -> if (showDialog) {
-                    ErrorDialog((authState as AuthState.Error).message) {
-                        showDialog = false
-                        authViewModel.resetAuthState()
-                    }
-                }
-
-                is AuthState.Loading -> LoadingDialog()
-                else -> {}
+            if (uiState.isLoading) {
+                LoadingDialog()
             }
 
             LoginFormUi(
@@ -64,16 +57,18 @@ fun LoginScreen(
                 isButtonEnabled = uiState.isButtonEnabled,
                 onEmailChange = viewModel::updateEmail,
                 onPasswordChange = viewModel::updatePassword,
-                onSignInClick = {
-                    authViewModel.signIn(
-                        email = uiState.email,
-                        password = uiState.password
-                    )
-                },
+                onSignInClick = viewModel::login,
                 onSignUpClick = viewModel::signUp,
                 onAutoFillClick = viewModel::autoFillForTesting,
                 paddingValues = paddingValues
             )
+
+            errorMessage?.let { message ->
+                ErrorDialog(message) {
+                    errorMessage = null
+                    viewModel.onDialogDismissAction()
+                }
+            }
         }
     )
 }
