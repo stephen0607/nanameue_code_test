@@ -1,5 +1,7 @@
 package com.example.nanameue_code_test.di
 
+import com.example.nanameue_code_test.domain.usecase.auth.GetUserInfoUseCase
+import com.example.nanameue_code_test.domain.usecase.auth.SignOutUseCase
 import com.example.nanameue_code_test.domain.usecase.create_post.CreatePostUseCase
 import com.example.nanameue_code_test.domain.usecase.create_post.ICreatePostUseCase
 import com.example.nanameue_code_test.domain.usecase.timeline.GetLatestPostsUseCase
@@ -17,11 +19,14 @@ val appModule = module {
     viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel(get(), get()) }
     viewModel { TimelineViewModel(get()) }
-    viewModel { ProfileViewModel() }
+    viewModel { ProfileViewModel(get(), get()) }
     viewModel { CreatePostViewModel(get()) }
     viewModel { SplashViewModel(get()) }
 
     // Use Cases
     single { GetLatestPostsUseCase(get()) }
     single<ICreatePostUseCase> { CreatePostUseCase(get(), get(), get()) }
+    single { GetUserInfoUseCase() }
+    single { SignOutUseCase(get()) }
+
 }

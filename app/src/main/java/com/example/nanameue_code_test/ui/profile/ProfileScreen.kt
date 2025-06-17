@@ -10,8 +10,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.example.nanameue_code_test.R
-import com.example.nanameue_code_test.ui.auth.AuthState
-import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.AppScaffold
 import com.example.nanameue_code_test.ui.common.ConfirmDialog
 import org.koin.androidx.compose.koinViewModel
@@ -19,23 +17,37 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = koinViewModel(),
-    authViewModel: AuthViewModel = koinViewModel(),
     navController: NavController
 ) {
-    val authState by authViewModel.authState.collectAsState()
-    val userInfo = authViewModel.getUserInfo()
+    val uiState by viewModel.uiState.collectAsState()
     var showSignOutDialog by remember { mutableStateOf(false) }
-    LaunchedEffect(authState) {
-        if (authState is AuthState.Initial && userInfo == null) {
-            viewModel.onSignOutComplete()
+
+    LaunchedEffect(Unit) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is ProfileEvent.Error -> {
+                    // Handle error if needed
+                }
+
+                else -> {} // Navigation events are handled in NavigationStack
+            }
         }
     }
+
+
 
     AppScaffold(
         navController = navController,
         title = stringResource(R.string.profile),
         showAppBar = true,
         content = { innerPadding ->
+            ProfileUi(
+                displayName = uiState.userInfo?.displayName.orEmpty(),
+                email = uiState.userInfo?.email,
+                uid = uiState.userInfo?.uid,
+                onSignOutClick = { showSignOutDialog = true },
+                innerPadding = innerPadding
+            )
             if (showSignOutDialog) {
                 ConfirmDialog(
                     onDismiss = { showSignOutDialog = false },
@@ -43,27 +55,11 @@ fun ProfileScreen(
                     message = stringResource(R.string.confirm_sign_out_message),
                     onConfirm = {
                         showSignOutDialog = false
-                        authViewModel.signOut()
+                        viewModel.signOut()
                     },
                     onCancel = { showSignOutDialog = false }
                 )
             }
-
-            ProfileContent(
-                displayName = userInfo?.displayName.orEmpty(),
-                email = userInfo?.email,
-                uid = userInfo?.uid,
-                authState = authState,
-                showSignOutDialog = showSignOutDialog,
-                onSignOutClick = { showSignOutDialog = true },
-                onConfirmSignOut = {
-                    showSignOutDialog = false
-                    authViewModel.signOut()
-                },
-                onDismissDialog = { showSignOutDialog = false },
-                innerPadding = innerPadding
-            )
-
         }
     )
 }

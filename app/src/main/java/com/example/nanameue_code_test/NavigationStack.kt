@@ -43,7 +43,7 @@ fun NavigationStack() {
         merge(
             loginViewModel.event,
             signUpViewModel.event,
-            profileViewModel.navigationEvent,
+            profileViewModel.event,
             timelineViewModel.navigationEvent,
             createPostViewModel.navigationEvent,
             splashViewModel.navigationEvent
@@ -52,6 +52,7 @@ fun NavigationStack() {
                 is LoginEvent.NavigateToSignUp -> {
                     navController.navigate(Screen.SignUp.route)
                 }
+
                 is LoginEvent.NavigateToTimeline -> {
                     navController.navigate(Screen.Timeline.route) {
                         popUpTo(0) { inclusive = true }
@@ -105,7 +106,7 @@ fun NavigationStack() {
             TimelineScreen(timelineViewModel, navController)
         }
         composable(route = Screen.Profile.route) {
-            ProfileScreen(profileViewModel, authViewModel, navController)
+            ProfileScreen(profileViewModel, navController)
         }
         composable(route = Screen.CreatePost.route) {
             CreatePostScreen(createPostViewModel, authViewModel, navController)
