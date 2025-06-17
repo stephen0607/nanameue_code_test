@@ -46,8 +46,7 @@ fun SignUpFormPreview() {
         onEmailChange = {},
         onPasswordChange = {},
         onConfirmPasswordChange = {},
-        onSubmit = {},
-        onAutoFill = {})
+        onSubmit = {})
 }
 
 @Preview(showBackground = true)
@@ -67,8 +66,7 @@ fun SignUpFormWithErrorsPreview() {
         onEmailChange = {},
         onPasswordChange = {},
         onConfirmPasswordChange = {},
-        onSubmit = {},
-        onAutoFill = {})
+        onSubmit = {})
 }
 
 @Composable
@@ -114,7 +112,6 @@ fun SignUpScreen(
                             onPasswordChange = viewModel::updatePassword,
                             onConfirmPasswordChange = viewModel::updateConfirmPassword,
                             onSubmit = viewModel::signUp,
-                            onAutoFill = viewModel::autoFillSignUpForTesting
                         )
                     }
 
@@ -139,7 +136,6 @@ fun SignUpForm(
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
     onSubmit: () -> Unit,
-    onAutoFill: () -> Unit
 ) {
     Column(
         modifier = Modifier.padding(Dimensions.paddingMedium),
@@ -193,10 +189,6 @@ fun SignUpForm(
             onClick = onSubmit, enabled = uiState.isButtonEnabled && !uiState.isLoading
         ) {
             Text(stringResource(R.string.sign_up))
-        }
-
-        Button(onClick = onAutoFill) {
-            Text("Auto Fill for Sign Up (Testing)") // optional to localize
         }
     }
 }

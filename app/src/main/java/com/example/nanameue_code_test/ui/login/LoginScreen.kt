@@ -56,7 +56,6 @@ fun LoginScreen(
                 onPasswordChange = viewModel::updatePassword,
                 onSignInClick = viewModel::login,
                 onSignUpClick = viewModel::signUp,
-                onAutoFillClick = viewModel::autoFillForTesting,
                 paddingValues = paddingValues
             )
 

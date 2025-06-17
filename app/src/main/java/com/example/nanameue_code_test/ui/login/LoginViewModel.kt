@@ -73,17 +73,4 @@ class LoginViewModel(
     fun resetUiState() {
         _uiState.value = LoginUiState()
     }
-
-    // todo remove after testing
-    fun autoFillForTesting() {
-        _uiState.update { currentState ->
-            currentState.copy(
-                email = "22222abc@abcde.com",
-                password = "12312312",
-                isPasswordValid = true,
-                isEmailValid = true,
-                isButtonEnabled = true
-            )
-        }
-    }
 } 

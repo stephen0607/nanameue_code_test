@@ -31,7 +31,6 @@ fun LoginFormUi(
     onPasswordChange: (String) -> Unit,
     onSignInClick: () -> Unit,
     onSignUpClick: () -> Unit,
-    onAutoFillClick: () -> Unit,
     paddingValues: PaddingValues
 ) {
     Column(
@@ -77,13 +76,6 @@ fun LoginFormUi(
         Button(onClick = onSignInClick, enabled = isButtonEnabled) {
             Text(stringResource(R.string.login))
         }
-
-        FieldSpacer()
-
-        Button(onClick = onAutoFillClick) {
-            Text("Input for testing, need to remove !!!!!!!!!!!")
-            Text(stringResource(R.string.login))
-        }
     }
 }
 
@@ -100,7 +92,6 @@ fun LoginFormUiPreview() {
         onPasswordChange = {},
         onSignInClick = {},
         onSignUpClick = {},
-        onAutoFillClick = {},
         paddingValues = PaddingValues(Dimensions.paddingMedium)
     )
 }
@@ -118,7 +109,6 @@ fun LoginFormUiEmptyInputPreview() {
         onPasswordChange = {},
         onSignInClick = {},
         onSignUpClick = {},
-        onAutoFillClick = {},
         paddingValues = PaddingValues(Dimensions.paddingMedium)
     )
 }
@@ -136,7 +126,6 @@ fun LoginFormUiErrorInputPreview() {
         onPasswordChange = {},
         onSignInClick = {},
         onSignUpClick = {},
-        onAutoFillClick = {},
         paddingValues = PaddingValues(Dimensions.paddingMedium)
     )
 }
