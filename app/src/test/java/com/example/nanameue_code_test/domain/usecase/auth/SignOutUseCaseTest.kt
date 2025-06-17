@@ -35,7 +35,7 @@ class SignOutUseCaseTest {
     fun `when sign out fails, return failure result`() = runBlocking {
         // Arrange
         val exception = Exception("Failed to sign out")
-        coEvery { mockAuthRepository.signOut() } returns Result.failure(exception)
+        coEvery { mockAuthRepository.signOut() } throws exception
 
         // Act
         val result = useCase()
