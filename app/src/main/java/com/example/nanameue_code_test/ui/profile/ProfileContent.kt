@@ -82,7 +82,7 @@ private fun ProfileContentPreview() {
                 email = "john.doe@example.com",
                 uid = "user123",
                 onSignOutClick = {},
-                innerPadding = PaddingValues(16.dp)
+                innerPadding = PaddingValues(Dimensions.paddingMedium)
             )
         }
     }

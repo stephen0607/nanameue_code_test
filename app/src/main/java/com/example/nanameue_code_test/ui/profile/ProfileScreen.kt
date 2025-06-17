@@ -16,8 +16,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel = koinViewModel(),
-    navController: NavController
+    viewModel: ProfileViewModel = koinViewModel(), navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showSignOutDialog by remember { mutableStateOf(false) }
@@ -37,8 +36,7 @@ fun ProfileScreen(
 
 
 
-    AppScaffold(
-        navController = navController,
+    AppScaffold(navController = navController,
         title = stringResource(R.string.profile),
         showAppBar = true,
         content = { innerPadding ->
@@ -50,17 +48,14 @@ fun ProfileScreen(
                 innerPadding = innerPadding
             )
             if (showSignOutDialog) {
-                ConfirmDialog(
-                    onDismiss = { showSignOutDialog = false },
+                ConfirmDialog(onDismiss = { showSignOutDialog = false },
                     title = stringResource(R.string.confirm_sign_out),
                     message = stringResource(R.string.confirm_sign_out_message),
                     onConfirm = {
                         showSignOutDialog = false
                         viewModel.signOut()
                     },
-                    onCancel = { showSignOutDialog = false }
-                )
+                    onCancel = { showSignOutDialog = false })
             }
-        }
-    )
+        })
 }

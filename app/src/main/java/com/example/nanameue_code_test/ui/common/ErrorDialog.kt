@@ -10,23 +10,18 @@ import com.example.nanameue_code_test.R
 
 @Composable
 fun ErrorDialog(message: String, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
+    AlertDialog(onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.ok))
             }
         },
         title = { Text(stringResource(R.string.authentication_failed)) },
-        text = { Text(message) }
-    )
+        text = { Text(message) })
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ErrorDialogPreview() {
-    ErrorDialog(
-        message = "Invalid email or password.",
-        onDismiss = {}
-    )
+    ErrorDialog(message = "Invalid email or password.", onDismiss = {})
 }

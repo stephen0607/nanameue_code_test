@@ -13,8 +13,7 @@ fun SplashScreen(
     splashViewModel: SplashViewModel = koinViewModel()
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
     }

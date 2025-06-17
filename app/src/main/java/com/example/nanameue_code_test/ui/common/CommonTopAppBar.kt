@@ -24,16 +24,16 @@ fun CommonTopAppBar(
             run {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(
-                        Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back",
+                        Icons.AutoMirrored.Outlined.ArrowBack,
+                        contentDescription = "Back",
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
         }
-    }, actions = actions,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary
-        )
+    }, actions = actions, colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        titleContentColor = MaterialTheme.colorScheme.onPrimary
+    )
     )
 }

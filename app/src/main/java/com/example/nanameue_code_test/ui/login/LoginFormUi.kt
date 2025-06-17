@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.style.Dimensions
 import com.example.nanameue_code_test.ui.common.FieldSpacer
@@ -102,7 +101,7 @@ fun LoginFormUiPreview() {
         onSignInClick = {},
         onSignUpClick = {},
         onAutoFillClick = {},
-        paddingValues = PaddingValues(16.dp)
+        paddingValues = PaddingValues(Dimensions.paddingMedium)
     )
 }
 
@@ -120,7 +119,7 @@ fun LoginFormUiEmptyInputPreview() {
         onSignInClick = {},
         onSignUpClick = {},
         onAutoFillClick = {},
-        paddingValues = PaddingValues(16.dp)
+        paddingValues = PaddingValues(Dimensions.paddingMedium)
     )
 }
 
@@ -138,7 +137,6 @@ fun LoginFormUiErrorInputPreview() {
         onSignInClick = {},
         onSignUpClick = {},
         onAutoFillClick = {},
-        paddingValues = PaddingValues(16.dp)
+        paddingValues = PaddingValues(Dimensions.paddingMedium)
     )
 }
-

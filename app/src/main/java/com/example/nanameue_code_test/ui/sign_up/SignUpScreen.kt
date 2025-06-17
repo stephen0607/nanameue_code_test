@@ -32,57 +32,52 @@ import org.koin.androidx.compose.koinViewModel
 @Preview(showBackground = true)
 @Composable
 fun SignUpFormPreview() {
-    SignUpForm(
-        uiState = SignUpUiState.Input(
-            displayName = "John Doe",
-            email = "john@example.com",
-            password = "password123",
-            confirmPassword = "password123",
-            isEmailValid = true,
-            isPasswordValid = true,
-            isConfirmPasswordValid = true,
-            isButtonEnabled = true
-        ),
+    SignUpForm(uiState = SignUpUiState.Input(
+        displayName = "John Doe",
+        email = "john@example.com",
+        password = "password123",
+        confirmPassword = "password123",
+        isEmailValid = true,
+        isPasswordValid = true,
+        isConfirmPasswordValid = true,
+        isButtonEnabled = true
+    ),
         onDisplayNameChange = {},
         onEmailChange = {},
         onPasswordChange = {},
         onConfirmPasswordChange = {},
         onSubmit = {},
-        onAutoFill = {}
-    )
+        onAutoFill = {})
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SignUpFormWithErrorsPreview() {
-    SignUpForm(
-        uiState = SignUpUiState.Input(
-            displayName = "John Doe",
-            email = "invalid-email",
-            password = "short",
-            confirmPassword = "different",
-            isEmailValid = false,
-            isPasswordValid = false,
-            isConfirmPasswordValid = false,
-            isButtonEnabled = false
-        ),
+    SignUpForm(uiState = SignUpUiState.Input(
+        displayName = "John Doe",
+        email = "invalid-email",
+        password = "short",
+        confirmPassword = "different",
+        isEmailValid = false,
+        isPasswordValid = false,
+        isConfirmPasswordValid = false,
+        isButtonEnabled = false
+    ),
         onDisplayNameChange = {},
         onEmailChange = {},
         onPasswordChange = {},
         onConfirmPasswordChange = {},
         onSubmit = {},
-        onAutoFill = {}
-    )
+        onAutoFill = {})
 }
 
 @Composable
 fun SignUpScreen(
-    viewModel: SignUpViewModel = koinViewModel(),
-    navController: NavController
+    viewModel: SignUpViewModel = koinViewModel(), navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    
+
     DisposableEffect(Unit) {
         onDispose {
             viewModel.resetUiState()
@@ -102,8 +97,7 @@ fun SignUpScreen(
         }
     }
 
-    AppScaffold(
-        navController = navController,
+    AppScaffold(navController = navController,
         title = stringResource(R.string.sign_up),
         content = { paddingValues ->
             Box(Modifier.padding(paddingValues)) {
@@ -134,8 +128,7 @@ fun SignUpScreen(
                     }
                 }
             }
-        }
-    )
+        })
 }
 
 @Composable
@@ -197,8 +190,7 @@ fun SignUpForm(
         Box(modifier = Modifier.weight(1f))
 
         Button(
-            onClick = onSubmit,
-            enabled = uiState.isButtonEnabled && !uiState.isLoading
+            onClick = onSubmit, enabled = uiState.isButtonEnabled && !uiState.isLoading
         ) {
             Text(stringResource(R.string.sign_up))
         }

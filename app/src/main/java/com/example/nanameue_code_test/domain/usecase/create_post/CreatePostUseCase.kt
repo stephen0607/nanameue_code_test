@@ -33,10 +33,7 @@ class CreatePostUseCase(
     }
 
     private suspend fun savePostToFirestore(
-        displayName: String,
-        content: String,
-        imageUrl: String?,
-        userId: String
+        displayName: String, content: String, imageUrl: String?, userId: String
     ) {
         val post = mapOf(
             "displayName" to displayName,

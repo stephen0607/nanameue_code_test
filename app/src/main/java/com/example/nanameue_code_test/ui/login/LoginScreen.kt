@@ -18,8 +18,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = koinViewModel(),
-    navController: NavController
+    viewModel: LoginViewModel = koinViewModel(), navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -34,13 +33,13 @@ fun LoginScreen(
                 is LoginEvent.Error -> {
                     errorMessage = event.message
                 }
+
                 else -> {} // Navigation events are handled in NavigationStack
             }
         }
     }
 
-    AppScaffold(
-        navController = navController,
+    AppScaffold(navController = navController,
         title = stringResource(R.string.login),
         content = { paddingValues ->
             if (uiState.isLoading) {
@@ -67,6 +66,5 @@ fun LoginScreen(
                     viewModel.onDialogDismissAction()
                 }
             }
-        }
-    )
+        })
 }

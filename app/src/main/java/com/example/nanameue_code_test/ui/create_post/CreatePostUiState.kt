@@ -8,7 +8,7 @@ sealed class CreatePostUiState {
         val imageUri: Uri? = null,
         val isPostButtonEnable: Boolean = false
     ) : CreatePostUiState()
-    
+
     data object Loading : CreatePostUiState()
     data object Success : CreatePostUiState()
     data class Error(val message: String) : CreatePostUiState()

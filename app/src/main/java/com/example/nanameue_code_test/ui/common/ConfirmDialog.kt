@@ -38,11 +38,9 @@ fun ConfirmDialog(
 @Preview(showBackground = true)
 @Composable
 fun ConfirmDialogPreview() {
-    ConfirmDialog(
-        onDismiss = {},
+    ConfirmDialog(onDismiss = {},
         title = "Delete Post",
         message = "Are you sure you want to delete this post?",
         onConfirm = {},
-        onCancel = {}
-    )
+        onCancel = {})
 }

@@ -16,12 +16,9 @@ class GetLatestPostsUseCase(
 ) {
     suspend fun execute(): Result<List<Post>> {
         return try {
-            val snapshot = firestore
-                .collection("posts")
+            val snapshot = firestore.collection("posts")
                 .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
-                .limit(10)
-                .get()
-                .await()
+                .limit(10).get().await()
 
             val posts = snapshot.documents.mapNotNull { doc ->
                 doc.toObject(Post::class.java)

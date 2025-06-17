@@ -12,8 +12,7 @@ import com.example.nanameue_code_test.R
 @Composable
 fun TimelineStateNoPost() {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         Text(stringResource(R.string.no_posts_yet))
     }

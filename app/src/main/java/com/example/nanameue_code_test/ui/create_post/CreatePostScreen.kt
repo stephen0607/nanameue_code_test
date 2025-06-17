@@ -48,8 +48,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CreatePostScreen(
-    createPostViewModel: CreatePostViewModel = koinViewModel(),
-    navController: NavController
+    createPostViewModel: CreatePostViewModel = koinViewModel(), navController: NavController
 ) {
     val uiState by createPostViewModel.uiState.collectAsState()
     val user = FirebaseAuth.getInstance().currentUser
@@ -72,8 +71,7 @@ fun CreatePostScreen(
         }
     }
 
-    AppScaffold(
-        navController = navController,
+    AppScaffold(navController = navController,
         title = stringResource(R.string.create_new_post),
         content = { paddingValues ->
             Box(
@@ -110,8 +108,7 @@ fun CreatePostScreen(
                     }
                 }
             }
-        }
-    )
+        })
 }
 
 @Composable
@@ -152,8 +149,7 @@ private fun CreatePostForm(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = { imagePickerLauncher.launch("image/*") }) {
                 Icon(
@@ -163,8 +159,7 @@ private fun CreatePostForm(
             }
 
             Button(
-                onClick = { viewModel.createPost() },
-                enabled = uiState.isPostButtonEnable
+                onClick = { viewModel.createPost() }, enabled = uiState.isPostButtonEnable
             ) {
                 Text(stringResource(R.string.post))
             }
@@ -174,8 +169,7 @@ private fun CreatePostForm(
 
 @Composable
 fun SelectedImageWithRemoveButton(
-    imageUri: Uri,
-    onRemoveImage: () -> Unit
+    imageUri: Uri, onRemoveImage: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -208,9 +202,7 @@ fun SelectedImageWithRemoveButton(
 @Composable
 fun CreatePostFormPreview() {
     val dummyState = CreatePostUiState.Input(
-        postContent = "This is a preview post.",
-        imageUri = null,
-        isPostButtonEnable = true
+        postContent = "This is a preview post.", imageUri = null, isPostButtonEnable = true
     )
 
     val fakeViewModel = object : CreatePostViewModel(createPostUseCase = FakeCreatePostUseCase()) {}
@@ -232,9 +224,7 @@ fun CreatePostFormPreview() {
 @Composable
 fun CreatePostFormEmptyPreview() {
     val dummyState = CreatePostUiState.Input(
-        postContent = "",
-        imageUri = null,
-        isPostButtonEnable = false
+        postContent = "", imageUri = null, isPostButtonEnable = false
     )
 
     val fakeViewModel = object : CreatePostViewModel(createPostUseCase = FakeCreatePostUseCase()) {}

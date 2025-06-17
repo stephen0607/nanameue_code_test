@@ -78,7 +78,9 @@ fun PostUi(post: Post = fakePost) {
             }
             Spacer(modifier = Modifier.height(Dimensions.paddingSmall))
             Text(
-                text = formatTimestamp(post.timestamp), fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground
+                text = formatTimestamp(post.timestamp),
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
     }

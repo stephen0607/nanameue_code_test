@@ -20,8 +20,6 @@ fun AppScaffold(
             if (showAppBar) {
                 CommonTopAppBar(navController = navController, title = title, actions = actions)
             }
-        },
-        content = content,
-        floatingActionButton = floatingActionButton
+        }, content = content, floatingActionButton = floatingActionButton
     )
 }

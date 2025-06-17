@@ -81,15 +81,14 @@ class SignUpViewModel(
                     password = currentState.password,
                 ).onSuccess {
                     resetUiState()
-                    updateDisplayNameUseCase(currentState.displayName)
-                        .onFailure { error ->
-                            _event.emit(
-                                SignUpEvent.Error(
-                                    error.message ?: "Failed to update display name"
-                                )
+                    updateDisplayNameUseCase(currentState.displayName).onFailure { error ->
+                        _event.emit(
+                            SignUpEvent.Error(
+                                error.message ?: "Failed to update display name"
                             )
-                            return@onSuccess
-                        }
+                        )
+                        return@onSuccess
+                    }
                     _event.emit(SignUpEvent.NavigateToTimeline)
                 }.onFailure {
                     _event.emit(SignUpEvent.Error(it.message ?: "Registration failed"))

@@ -31,8 +31,7 @@ import com.example.nanameue_code_test.style.Dimensions
 @Composable
 fun LoadingDialog() {
     Dialog(
-        onDismissRequest = { },
-        properties = DialogProperties(
+        onDismissRequest = { }, properties = DialogProperties(
             dismissOnBackPress = false,
             dismissOnClickOutside = false,
             usePlatformDefaultWidth = false

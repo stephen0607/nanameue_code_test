@@ -21,8 +21,7 @@ sealed class ProfileEvent : NavigationEvent() {
 
 
 class ProfileViewModel(
-    private val getUserInfoUseCase: GetUserInfoUseCase,
-    private val signOutUseCase: SignOutUseCase
+    private val getUserInfoUseCase: GetUserInfoUseCase, private val signOutUseCase: SignOutUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -33,31 +32,27 @@ class ProfileViewModel(
     fun loadUserInfo() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            getUserInfoUseCase()
-                .onSuccess { userInfo ->
-                    _uiState.update { it.copy(userInfo = userInfo, isLoading = false) }
-                    if (userInfo == null) {
-                        _event.emit(ProfileEvent.NavigateToLogin)
-                    }
+            getUserInfoUseCase().onSuccess { userInfo ->
+                _uiState.update { it.copy(userInfo = userInfo, isLoading = false) }
+                if (userInfo == null) {
+                    _event.emit(ProfileEvent.NavigateToLogin)
                 }
-                .onFailure {
-                    _event.emit(ProfileEvent.Error(it.message ?: "Failed to load user info"))
-                    _uiState.update { it.copy(isLoading = false) }
-                }
+            }.onFailure {
+                _event.emit(ProfileEvent.Error(it.message ?: "Failed to load user info"))
+                _uiState.update { it.copy(isLoading = false) }
+            }
         }
     }
 
     fun signOut() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            signOutUseCase()
-                .onSuccess {
-                    _event.emit(ProfileEvent.NavigateToLogin)
-                }
-                .onFailure {
-                    _event.emit(ProfileEvent.Error(it.message ?: "Failed to sign out"))
-                    _uiState.update { it.copy(isLoading = false) }
-                }
+            signOutUseCase().onSuccess {
+                _event.emit(ProfileEvent.NavigateToLogin)
+            }.onFailure {
+                _event.emit(ProfileEvent.Error(it.message ?: "Failed to sign out"))
+                _uiState.update { it.copy(isLoading = false) }
+            }
         }
     }
 }

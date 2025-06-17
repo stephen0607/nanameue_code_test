@@ -57,19 +57,13 @@ fun NavigationStack() {
                     }
                 }
 
-                is ProfileEvent.NavigateToTimeline,
-                is SignUpEvent.NavigateToTimeline,
-                is CreatePostEvent.NavigateToTimeline,
-                is SplashEvent.NavigateToTimeline
-                    -> {
+                is ProfileEvent.NavigateToTimeline, is SignUpEvent.NavigateToTimeline, is CreatePostEvent.NavigateToTimeline, is SplashEvent.NavigateToTimeline -> {
                     navController.navigate(Screen.Timeline.route) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
 
-                is ProfileEvent.NavigateToLogin,
-                is SplashEvent.NavigateToLogin
-                    -> {
+                is ProfileEvent.NavigateToLogin, is SplashEvent.NavigateToLogin -> {
                     navController.navigate(Screen.Login.route) {
                         popUpTo(0) { inclusive = true }
                     }
@@ -112,4 +106,4 @@ fun NavigationStack() {
     }
 }
 
-open class NavigationEvent {}
+open class NavigationEvent

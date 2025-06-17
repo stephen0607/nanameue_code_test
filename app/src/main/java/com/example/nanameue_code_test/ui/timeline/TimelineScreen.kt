@@ -26,8 +26,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun TimelineScreen(
-    viewModel: TimelineViewModel = koinViewModel(),
-    navController: NavController
+    viewModel: TimelineViewModel = koinViewModel(), navController: NavController
 ) {
     val scrollState = rememberScrollState()
     val uiState by viewModel.uiState.collectAsState()
@@ -36,8 +35,7 @@ fun TimelineScreen(
         viewModel.fetchTimeline()
     }
 
-    AppScaffold(
-        navController = navController,
+    AppScaffold(navController = navController,
         title = stringResource(R.string.timeline),
         actions = {
             IconButton(onClick = { viewModel.navigateToProfile() }) {
@@ -81,10 +79,8 @@ fun TimelineScreen(
                 modifier = Modifier.padding(Dimensions.paddingMedium)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Create,
-                    contentDescription = "Add"
+                    imageVector = Icons.Default.Create, contentDescription = "Add"
                 )
             }
-        }
-    )
+        })
 }

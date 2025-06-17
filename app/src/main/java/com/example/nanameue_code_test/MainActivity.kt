@@ -15,8 +15,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             NanameueTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     NavigationStack()
                 }

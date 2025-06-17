@@ -57,13 +57,11 @@ class LoginViewModel(
         val currentState = _uiState.value
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            signInUseCase(currentState.email, currentState.password)
-                .onSuccess {
-                    _event.tryEmit(LoginEvent.NavigateToTimeline)
-                }
-                .onFailure {
-                    _event.tryEmit(LoginEvent.Error(it.message ?: "Authentication failed"))
-                }
+            signInUseCase(currentState.email, currentState.password).onSuccess {
+                _event.tryEmit(LoginEvent.NavigateToTimeline)
+            }.onFailure {
+                _event.tryEmit(LoginEvent.Error(it.message ?: "Authentication failed"))
+            }
             _uiState.update { it.copy(isLoading = false) }
         }
     }

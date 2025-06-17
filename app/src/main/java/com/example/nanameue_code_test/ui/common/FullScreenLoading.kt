@@ -26,8 +26,7 @@ import com.example.nanameue_code_test.style.Dimensions
 @Composable
 fun FullScreenLoading() {
     Dialog(
-        onDismissRequest = { },
-        properties = DialogProperties(
+        onDismissRequest = { }, properties = DialogProperties(
             dismissOnBackPress = false,
             dismissOnClickOutside = false,
             usePlatformDefaultWidth = false
@@ -36,9 +35,7 @@ fun FullScreenLoading() {
         (LocalView.current.parent as DialogWindowProvider).window.setDimAmount(0f)
 
         Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -57,10 +54,8 @@ fun FullScreenLoading() {
     }
 }
 
-
 @Preview(showBackground = false)
 @Composable
 fun FullScreenLoadingPreview() {
     FullScreenLoading()
 }
-

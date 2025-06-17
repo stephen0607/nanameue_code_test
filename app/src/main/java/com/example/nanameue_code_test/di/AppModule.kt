@@ -28,5 +28,4 @@ val appModule = module {
     single<ICreatePostUseCase> { CreatePostUseCase(get(), get(), get()) }
     single { GetUserInfoUseCase() }
     single { SignOutUseCase(get()) }
-
 }
