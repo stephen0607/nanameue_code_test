@@ -10,9 +10,9 @@ sealed class SignUpUiState {
         val isPasswordValid: Boolean = true,
         val isConfirmPasswordValid: Boolean = true,
         val isButtonEnabled: Boolean = false,
+        // put loading here to make sure the loading is on top of input
         val isLoading: Boolean = false
     ) : SignUpUiState()
-    
-    data object Success : SignUpUiState()
+
     data class Error(val message: String) : SignUpUiState()
 }

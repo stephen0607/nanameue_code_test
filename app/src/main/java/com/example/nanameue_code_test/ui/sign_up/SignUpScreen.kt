@@ -82,7 +82,7 @@ fun SignUpScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var errorMessage by remember { mutableStateOf<String?>(null) }
-
+    
     DisposableEffect(Unit) {
         onDispose {
             viewModel.resetUiState()
@@ -90,11 +90,13 @@ fun SignUpScreen(
     }
 
     LaunchedEffect(Unit) {
+        viewModel.resetUiState()
         viewModel.event.collect { event ->
             when (event) {
                 is SignUpEvent.Error -> {
                     errorMessage = event.message
                 }
+
                 else -> {} // Navigation events are handled in NavigationStack
             }
         }
@@ -122,8 +124,7 @@ fun SignUpScreen(
                         )
                     }
 
-                    is SignUpUiState.Error -> TODO()
-                    SignUpUiState.Success -> TODO()
+                    else -> {}
                 }
 
                 errorMessage?.let { message ->

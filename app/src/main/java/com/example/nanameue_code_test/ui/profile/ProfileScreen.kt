@@ -23,6 +23,7 @@ fun ProfileScreen(
     var showSignOutDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
+        viewModel.loadUserInfo()
         viewModel.event.collect { event ->
             when (event) {
                 is ProfileEvent.Error -> {

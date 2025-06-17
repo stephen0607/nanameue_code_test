@@ -83,7 +83,11 @@ class SignUpViewModel(
                     resetUiState()
                     updateDisplayNameUseCase(currentState.displayName)
                         .onFailure { error ->
-                            _event.emit(SignUpEvent.Error(error.message ?: "Failed to update display name"))
+                            _event.emit(
+                                SignUpEvent.Error(
+                                    error.message ?: "Failed to update display name"
+                                )
+                            )
                             return@onSuccess
                         }
                     _event.emit(SignUpEvent.NavigateToTimeline)

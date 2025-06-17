@@ -30,11 +30,7 @@ class ProfileViewModel(
     private val _event = MutableSharedFlow<ProfileEvent>(replay = 0)
     val event: SharedFlow<ProfileEvent> = _event
 
-    init {
-        loadUserInfo()
-    }
-
-    private fun loadUserInfo() {
+    fun loadUserInfo() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             getUserInfoUseCase()
