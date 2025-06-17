@@ -41,7 +41,7 @@ fun NavigationStack() {
 
     LaunchedEffect(Unit) {
         merge(
-            loginViewModel.navigationEvent,
+            loginViewModel.event,
             signUpViewModel.navigationEvent,
             profileViewModel.navigationEvent,
             timelineViewModel.navigationEvent,
@@ -52,12 +52,16 @@ fun NavigationStack() {
                 is LoginEvent.NavigateToSignUp -> {
                     navController.navigate(Screen.SignUp.route)
                 }
+                is LoginEvent.NavigateToTimeline -> {
+                    navController.navigate(Screen.Timeline.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
 
                 is ProfileEvent.NavigateToTimeline,
-                LoginEvent.NavigateToTimeline,
-                SignUpEvent.NavigateToTimeline,
-                CreatePostEvent.NavigateToTimeline,
-                SplashEvent.NavigateToTimeline
+                is SignUpEvent.NavigateToTimeline,
+                is CreatePostEvent.NavigateToTimeline,
+                is SplashEvent.NavigateToTimeline
                     -> {
                     navController.navigate(Screen.Timeline.route) {
                         popUpTo(0) { inclusive = true }
@@ -65,7 +69,7 @@ fun NavigationStack() {
                 }
 
                 is ProfileEvent.NavigateToLogin,
-                SplashEvent.NavigateToLogin
+                is SplashEvent.NavigateToLogin
                     -> {
                     navController.navigate(Screen.Login.route) {
                         popUpTo(0) { inclusive = true }

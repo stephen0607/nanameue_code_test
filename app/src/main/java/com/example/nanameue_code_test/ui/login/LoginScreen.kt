@@ -29,14 +29,12 @@ fun LoginScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event ->
+        viewModel.event.collect { event ->
             when (event) {
-                is LoginUiEvent.Success -> {
-                    // Navigation is handled by the ViewModel
-                }
-                is LoginUiEvent.Error -> {
+                is LoginEvent.Error -> {
                     errorMessage = event.message
                 }
+                else -> {} // Navigation events are handled in NavigationStack
             }
         }
     }

@@ -15,11 +15,7 @@ import kotlinx.coroutines.launch
 sealed class LoginEvent : NavigationEvent() {
     data object NavigateToTimeline : LoginEvent()
     data object NavigateToSignUp : LoginEvent()
-}
-
-sealed class LoginUiEvent {
-    data object Success : LoginUiEvent()
-    data class Error(val message: String) : LoginUiEvent()
+    data class Error(val message: String) : LoginEvent()
 }
 
 class LoginViewModel(
@@ -28,11 +24,8 @@ class LoginViewModel(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    private val _uiEvent = MutableSharedFlow<LoginUiEvent>(replay = 0)
-    val uiEvent: SharedFlow<LoginUiEvent> = _uiEvent
-
-    private val _navigationEvent = MutableSharedFlow<LoginEvent>(replay = 1)
-    val navigationEvent: SharedFlow<LoginEvent> = _navigationEvent
+    private val _event = MutableSharedFlow<LoginEvent>(replay = 1)
+    val event: SharedFlow<LoginEvent> = _event
 
     fun updateEmail(email: String) {
         val isEmailValid = email.matches(Regex("^[A-Za-z0-9+_.-]+@(.+)\$"))
@@ -57,7 +50,7 @@ class LoginViewModel(
     }
 
     fun signUp() {
-        _navigationEvent.tryEmit(LoginEvent.NavigateToSignUp)
+        _event.tryEmit(LoginEvent.NavigateToSignUp)
     }
 
     fun login() {
@@ -66,11 +59,10 @@ class LoginViewModel(
             _uiState.update { it.copy(isLoading = true) }
             signInUseCase(currentState.email, currentState.password)
                 .onSuccess {
-                    _uiEvent.emit(LoginUiEvent.Success)
-                    _navigationEvent.emit(LoginEvent.NavigateToTimeline)
+                    _event.tryEmit(LoginEvent.NavigateToTimeline)
                 }
                 .onFailure {
-                    _uiEvent.emit(LoginUiEvent.Error(it.message ?: "Authentication failed"))
+                    _event.tryEmit(LoginEvent.Error(it.message ?: "Authentication failed"))
                 }
             _uiState.update { it.copy(isLoading = false) }
         }
