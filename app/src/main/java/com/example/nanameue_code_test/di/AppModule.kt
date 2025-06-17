@@ -1,6 +1,5 @@
 package com.example.nanameue_code_test.di
 
-import com.example.nanameue_code_test.domain.usecase.auth.SignInUseCase
 import com.example.nanameue_code_test.domain.usecase.create_post.CreatePostUseCase
 import com.example.nanameue_code_test.domain.usecase.create_post.ICreatePostUseCase
 import com.example.nanameue_code_test.domain.usecase.timeline.GetLatestPostsUseCase
@@ -16,7 +15,7 @@ import org.koin.dsl.module
 val appModule = module {
     // viewModel
     viewModel { LoginViewModel(get()) }
-    viewModel { SignUpViewModel() }
+    viewModel { SignUpViewModel(get(), get()) }
     viewModel { TimelineViewModel(get()) }
     viewModel { ProfileViewModel() }
     viewModel { CreatePostViewModel(get()) }
@@ -25,5 +24,4 @@ val appModule = module {
     // Use Cases
     single { GetLatestPostsUseCase(get()) }
     single<ICreatePostUseCase> { CreatePostUseCase(get(), get(), get()) }
-    single { SignInUseCase(get()) }
 }

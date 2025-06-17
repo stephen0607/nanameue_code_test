@@ -6,7 +6,7 @@ import com.example.nanameue_code_test.domain.usecase.auth.GetAuthStateUseCase
 import com.example.nanameue_code_test.domain.usecase.auth.SignInUseCase
 import com.example.nanameue_code_test.domain.usecase.auth.SignOutUseCase
 import com.example.nanameue_code_test.domain.usecase.auth.SignUpUseCase
-import com.example.nanameue_code_test.domain.usecase.create_post.CreatePostUseCase
+import com.example.nanameue_code_test.domain.usecase.auth.UpdateDisplayNameUseCase
 import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -40,4 +40,5 @@ val firebaseModule = module {
     single { SignInUseCase(get()) }
     single { SignOutUseCase(get()) }
     single { SignUpUseCase(get()) }
+    single { UpdateDisplayNameUseCase(get()) }
 }

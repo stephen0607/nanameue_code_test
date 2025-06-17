@@ -42,7 +42,7 @@ fun NavigationStack() {
     LaunchedEffect(Unit) {
         merge(
             loginViewModel.event,
-            signUpViewModel.navigationEvent,
+            signUpViewModel.event,
             profileViewModel.navigationEvent,
             timelineViewModel.navigationEvent,
             createPostViewModel.navigationEvent,
@@ -99,7 +99,7 @@ fun NavigationStack() {
             LoginScreen(loginViewModel, navController)
         }
         composable(route = Screen.SignUp.route) {
-            SignUpScreen(signUpViewModel, authViewModel, navController)
+            SignUpScreen(signUpViewModel, navController)
         }
         composable(route = Screen.Timeline.route) {
             TimelineScreen(timelineViewModel, navController)

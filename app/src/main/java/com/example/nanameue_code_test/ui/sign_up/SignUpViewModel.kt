@@ -3,6 +3,8 @@ package com.example.nanameue_code_test.ui.sign_up
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nanameue_code_test.NavigationEvent
+import com.example.nanameue_code_test.domain.usecase.auth.SignUpUseCase
+import com.example.nanameue_code_test.domain.usecase.auth.UpdateDisplayNameUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -13,22 +15,18 @@ import kotlinx.coroutines.launch
 sealed class SignUpEvent : NavigationEvent() {
     data object NavigateBack : SignUpEvent()
     data object NavigateToTimeline : SignUpEvent()
+    data class Error(val message: String) : SignUpEvent()
 }
 
-sealed class SignUpUiEvent {
-    data object Success : SignUpUiEvent()
-    data class Error(val message: String) : SignUpUiEvent()
-}
-
-class SignUpViewModel : ViewModel() {
-    private val _uiEvent = MutableSharedFlow<SignUpUiEvent>(replay = 0)
-    val uiEvent: SharedFlow<SignUpUiEvent> = _uiEvent
-
+class SignUpViewModel(
+    private val signUpUseCase: SignUpUseCase,
+    private val updateDisplayNameUseCase: UpdateDisplayNameUseCase
+) : ViewModel() {
     private val _uiState = MutableStateFlow<SignUpUiState>(SignUpUiState.Input())
     val uiState: StateFlow<SignUpUiState> = _uiState.asStateFlow()
 
-    private val _navigationEvent = MutableSharedFlow<SignUpEvent>(replay = 1)
-    val navigationEvent: SharedFlow<SignUpEvent> = _navigationEvent
+    private val _event = MutableSharedFlow<SignUpEvent>(replay = 0)
+    val event: SharedFlow<SignUpEvent> = _event
 
     fun updateDisplayName(displayName: String) {
         val currentState = _uiState.value
@@ -56,9 +54,7 @@ class SignUpViewModel : ViewModel() {
             _uiState.value = currentState.copy(
                 password = password,
                 isPasswordValid = isPasswordValid,
-                isConfirmPasswordValid = password == currentState.confirmPassword,
-                isButtonEnabled = currentState.isEmailValid && isPasswordValid &&
-                        (password == currentState.confirmPassword)
+                isButtonEnabled = currentState.isEmailValid && isPasswordValid && currentState.isConfirmPasswordValid
             )
         }
     }
@@ -75,38 +71,39 @@ class SignUpViewModel : ViewModel() {
         }
     }
 
-    fun signUpStart() {
+    fun signUp() {
         val currentState = _uiState.value
         if (currentState is SignUpUiState.Input) {
-            _uiState.value = currentState.copy(isLoading = true)
+            viewModelScope.launch {
+                _uiState.value = currentState.copy(isLoading = true)
+                signUpUseCase(
+                    email = currentState.email,
+                    password = currentState.password,
+                ).onSuccess {
+                    resetUiState()
+                    updateDisplayNameUseCase(currentState.displayName)
+                        .onFailure { error ->
+                            _event.emit(SignUpEvent.Error(error.message ?: "Failed to update display name"))
+                            return@onSuccess
+                        }
+                    _event.emit(SignUpEvent.NavigateToTimeline)
+                }.onFailure {
+                    _event.emit(SignUpEvent.Error(it.message ?: "Registration failed"))
+                }
+                _uiState.value = currentState.copy(isLoading = false)
+            }
         }
     }
 
-    fun signUpSuccess() {
-        viewModelScope.launch {
-            _uiEvent.emit(SignUpUiEvent.Success)
-        }
-    }
-
-    fun signUpFailed(message: String) {
-        viewModelScope.launch {
-            _uiEvent.emit(SignUpUiEvent.Error(message))
-        }
-    }
-
-    fun onDialogDismissAction(){
+    fun onDialogDismissAction() {
         val currentState = _uiState.value
-        if(currentState is SignUpUiState.Input){
-            _uiState.value =  currentState.copy(isLoading = false)
+        if (currentState is SignUpUiState.Input) {
+            _uiState.value = currentState.copy(isLoading = false)
         }
     }
 
     fun resetUiState() {
         _uiState.value = SignUpUiState.Input()
-    }
-
-    fun navigateToTimeline() {
-        _navigationEvent.tryEmit(SignUpEvent.NavigateToTimeline)
     }
 
     fun autoFillSignUpForTesting() {

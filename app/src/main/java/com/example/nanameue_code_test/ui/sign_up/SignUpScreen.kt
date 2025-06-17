@@ -14,13 +14,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.example.nanameue_code_test.R
 import com.example.nanameue_code_test.style.Dimensions
-import com.example.nanameue_code_test.ui.auth.AuthViewModel
 import com.example.nanameue_code_test.ui.common.AppScaffold
 import com.example.nanameue_code_test.ui.common.ErrorDialog
 import com.example.nanameue_code_test.ui.common.FieldSpacer
@@ -43,8 +43,12 @@ fun SignUpFormPreview() {
             isConfirmPasswordValid = true,
             isButtonEnabled = true
         ),
-        viewModel = SignUpViewModel(),
-        onSubmit = {}
+        onDisplayNameChange = {},
+        onEmailChange = {},
+        onPasswordChange = {},
+        onConfirmPasswordChange = {},
+        onSubmit = {},
+        onAutoFill = {}
     )
 }
 
@@ -62,19 +66,21 @@ fun SignUpFormWithErrorsPreview() {
             isConfirmPasswordValid = false,
             isButtonEnabled = false
         ),
-        viewModel = SignUpViewModel(),
-        onSubmit = {}
+        onDisplayNameChange = {},
+        onEmailChange = {},
+        onPasswordChange = {},
+        onConfirmPasswordChange = {},
+        onSubmit = {},
+        onAutoFill = {}
     )
 }
 
 @Composable
 fun SignUpScreen(
     viewModel: SignUpViewModel = koinViewModel(),
-    authViewModel: AuthViewModel = koinViewModel(),
     navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val registrationFailedMsg = stringResource(R.string.registration_failed)
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     DisposableEffect(Unit) {
@@ -84,12 +90,12 @@ fun SignUpScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event ->
+        viewModel.event.collect { event ->
             when (event) {
-                is SignUpUiEvent.Success -> viewModel.navigateToTimeline()
-                is SignUpUiEvent.Error -> {
+                is SignUpEvent.Error -> {
                     errorMessage = event.message
                 }
+                else -> {} // Navigation events are handled in NavigationStack
             }
         }
     }
@@ -105,22 +111,15 @@ fun SignUpScreen(
                         if (state.isLoading) {
                             LoadingDialog()
                         }
-                        SignUpForm(state, viewModel) {
-                            viewModel.signUpStart()
-                            authViewModel.signUp(
-                                email = state.email,
-                                password = state.password,
-                                displayName = state.displayName,
-                                onResult = { result ->
-                                    result.onSuccess { viewModel.signUpSuccess() }
-                                        .onFailure {
-                                            viewModel.signUpFailed(
-                                                it.message ?: registrationFailedMsg
-                                            )
-                                        }
-                                }
-                            )
-                        }
+                        SignUpForm(
+                            uiState = state,
+                            onDisplayNameChange = viewModel::updateDisplayName,
+                            onEmailChange = viewModel::updateEmail,
+                            onPasswordChange = viewModel::updatePassword,
+                            onConfirmPasswordChange = viewModel::updateConfirmPassword,
+                            onSubmit = viewModel::signUp,
+                            onAutoFill = viewModel::autoFillSignUpForTesting
+                        )
                     }
 
                     is SignUpUiState.Error -> TODO()
@@ -131,7 +130,6 @@ fun SignUpScreen(
                     ErrorDialog(message) {
                         errorMessage = null
                         viewModel.onDialogDismissAction()
-                        authViewModel.resetAuthState()
                     }
                 }
             }
@@ -142,24 +140,28 @@ fun SignUpScreen(
 @Composable
 fun SignUpForm(
     uiState: SignUpUiState.Input,
-    viewModel: SignUpViewModel,
-    onSubmit: () -> Unit
+    onDisplayNameChange: (String) -> Unit,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onConfirmPasswordChange: (String) -> Unit,
+    onSubmit: () -> Unit,
+    onAutoFill: () -> Unit
 ) {
     Column(
         modifier = Modifier.padding(Dimensions.paddingMedium),
-        horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         SingleLineTextField(
             value = uiState.displayName,
-            onValueChange = { viewModel.updateDisplayName(it) },
+            onValueChange = onDisplayNameChange,
             label = stringResource(R.string.display_name)
         )
         FieldSpacer()
 
         SingleLineTextField(
             value = uiState.email,
-            onValueChange = { viewModel.updateEmail(it) },
+            onValueChange = onEmailChange,
             label = stringResource(R.string.email),
             isError = !uiState.isEmailValid && uiState.email.isNotEmpty()
         )
@@ -171,7 +173,7 @@ fun SignUpForm(
 
         SingleLineTextField(
             value = uiState.password,
-            onValueChange = { viewModel.updatePassword(it) },
+            onValueChange = onPasswordChange,
             label = stringResource(R.string.password),
             isError = !uiState.isPasswordValid && uiState.password.isNotEmpty()
         )
@@ -183,7 +185,7 @@ fun SignUpForm(
 
         SingleLineTextField(
             value = uiState.confirmPassword,
-            onValueChange = { viewModel.updateConfirmPassword(it) },
+            onValueChange = onConfirmPasswordChange,
             label = stringResource(R.string.confirm_password),
             isError = !uiState.isConfirmPasswordValid && uiState.confirmPassword.isNotEmpty()
         )
@@ -200,7 +202,7 @@ fun SignUpForm(
             Text(stringResource(R.string.sign_up))
         }
 
-        Button(onClick = { viewModel.autoFillSignUpForTesting() }) {
+        Button(onClick = onAutoFill) {
             Text("Auto Fill for Sign Up (Testing)") // optional to localize
         }
     }
