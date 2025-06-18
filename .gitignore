@@ -1,33 +1,76 @@
-# Gradle files
+# ===============================
+# Android & Gradle
+# ===============================
 .gradle/
 build/
-
-# Local configuration file (sdk path, etc)
-local.properties
-
-# Log/OS Files
-*.log
-
-# Android Studio generated files and folders
+**/build/
 captures/
 .externalNativeBuild/
 .cxx/
-*.apk
 output-metadata.json
 
-# IntelliJ
+# Gradle Wrapper
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
+
+# Local configuration
+local.properties
+
+# Logs
+*.log
+
+# ===============================
+# Android Studio
+# ===============================
 *.iml
 .idea/
-misc.xml
-deploymentTargetDropDown.xml
-render.experimental.xml
+*.ipr
+*.iws
+.idea/caches
+.idea/libraries
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/gradle.xml
+.idea/compiler.xml
+.idea/misc.xml
+.idea/inspectionProfiles
+.idea/dictionaries
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/vcs.xml
+.idea/markdown-navigator.xml
+.idea/jarRepositories.xml
+.idea/assetWizardSettings.xml
 
-# Keystore files
+# ===============================
+# OS Files
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# Keystore (Security)
+# ===============================
 *.jks
 *.keystore
 
-# Google Services (e.g. APIs or Firebase)
+# ===============================
+# Firebase / Google services
+# ===============================
 google-services.json
+firebase.json
 
-# Android Profiling
+# ===============================
+# Android Profiler
+# ===============================
 *.hprof
+
+# ===============================
+# Other (Optional)
+# ===============================
+# Uncomment if you use .env files
+# .env
