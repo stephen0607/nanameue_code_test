@@ -1,5 +1,16 @@
 # 🌐 nanameue, Inc. Android App Test‬
 
+⚠️ Build Issues?
+
+If you're unable to build or run the project due to dependency conflicts or other errors, you can still try out the app using the pre-built APK included in this repository.
+
+📦 The APK file is located at:
+
+```/nanameue_code_test/app/test_build.apk```
+
+You can manually install it on your Android device to test the app without needing to build it locally.
+
+
 ## 🚀 Getting Started
 
 ```bash
@@ -11,7 +22,7 @@ git clone https://github.com/stephen0607/nanameue_code_test.git
 > 🔒 `google-services.json` is excluded from this repository for security.
 
 To run the app:
-1. You will receive the `google-services.json` file via email.
+1. I will send you the `google-services.json` file via email.
 2. Place it in your local project under:  
    ```
    /nanameue_code_test/app/google-services.json
@@ -87,6 +98,15 @@ Unit tests are included for business logic (UseCase) using:
 | <img src="https://github.com/user-attachments/assets/5a7c9630-4c6c-43e1-9cfd-2cea2c1051be" width="200"/> | <img src="https://github.com/user-attachments/assets/28eabd87-fe1e-4466-9bb3-4c96e20316d4" width="200"/> |
 
 ---
+
+## 🔐 Test Account
+
+You can use the following credentials to log in:
+
+- **Email**: `testuser@gmail.com`  
+- **Password**: `11111111`
+
+Alternatively, feel free to sign up with your own email and password.
 
 ## 👨‍💻 Author
 
